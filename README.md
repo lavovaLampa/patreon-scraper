@@ -13,7 +13,7 @@ Written in TypeScript because I like it. Hopefully will get better in future.
 # Installation
 - Clone repo
 - `npm install`
-- Insert your current sessionId from patreon cookie into index.ts
 
 # Running
-`npm run app`
+- Insert your current sessionId from Patreon cookie into index.ts
+- `npm run app`
