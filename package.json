@@ -1,7 +1,7 @@
 {
-  "name": "patreon-down",
+  "name": "patreon-scrapper",
   "version": "0.0.1",
-  "description": "Patreon downloader",
+  "description": "Very WIP Patreon downloader",
   "repository": "none",
   "main": "index.js",
   "scripts": {
