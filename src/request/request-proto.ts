@@ -1,3 +1,4 @@
+import { AssertionError } from "assert";
 import { IStringifyOptions } from "qs";
 import { RequestPromiseOptions } from "request-promise-native";
 import { Cookie, CookieJar } from "tough-cookie";
@@ -36,6 +37,7 @@ export abstract class BasicAuthenticatedPatreonRequest {
       this.cookieJar.setCookieSync(cookie, BASE_URL);
     } catch (e) {
       console.error(e);
+      throw new AssertionError({ message: "failed to add cookie to cookie jar" });
     }
   }
 

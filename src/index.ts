@@ -10,7 +10,7 @@ async function main() {
   const patreonDownloader = new PatreonAttachmentDownloader(sessionId);
 
   while (!patreonRequest.isLastPage()) {
-    if (await patreonRequest.getNextStreamPage()) {
+    if (await patreonRequest.nextPage()) {
       const att = patreonRequest.getCurrAttachments();
       patreonDownloader.addToQueue(att);
     }

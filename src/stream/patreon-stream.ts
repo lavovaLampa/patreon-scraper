@@ -2,7 +2,7 @@ import * as moment from "moment";
 import * as qs from "qs";
 import { IAttachment } from "../../types/internal";
 import { IStreamRequestOptions } from "../../types/request";
-import { DataTypeKey, IFileUrlQS, IStreamResponse } from "../../types/response";
+import { DataTypeKey, IFileUrlQS, IIncludeDataObject, IStreamResponse, ITypedResponse } from "../../types/response";
 import { PatreonRequest } from "../request/patreon-endpoint";
 
 const PAGE_POST_COUNT = 12;
@@ -13,19 +13,8 @@ export class PatreonAttachmentScrapper extends PatreonRequest {
 
   public getCurrAttachments(): IAttachment[] {
     if (this.currPage && this.currPage.included) {
-      const filteredAttachments = this.currPage.included.filter((obj) => obj.type === DataTypeKey.Attachment);
-      const mappedAttachments = filteredAttachments.map((val) => {
-        return { name: val.attributes.name, url: val.attributes.url };
-      });
-      return mappedAttachments.map((val) => {
-        const url = val.url;
-        const urlQsPart = url.split("?")[1];
-        const result: IFileUrlQS = qs.parse(urlQsPart);
-        return {
-          name: val.name,
-          ...result,
-        };
-      });
+      const attachments = this.currPage.included.filter((obj) => obj.type === DataTypeKey.Attachment);
+      return this.dataToAttachment(attachments);
     } else {
       return [];
     }
@@ -42,21 +31,49 @@ export class PatreonAttachmentScrapper extends PatreonRequest {
         cursor: this.nextCursor,
       },
     };
-    const response = await this.getStream(streamOptions);
+    let response: ITypedResponse<IStreamResponse> | null = null;
 
+    try {
+      response = await this.getStream(streamOptions);
+    } catch (e) {
+      console.error("failed to execute request");
+      console.error(e);
+    }
     if (response && response.body !== undefined && response.statusCode === 200) {
       this.currPage = response.body;
       this.nextCursor = this.isLastPage() ? this.nextCursor : this.nextCursorLocation();
       return true;
-    } else {
+    } else if (response !== null) {
       console.log("received status code: " + response.statusCode);
       console.log("page state not updated");
+      return false;
+    } else {
       return false;
     }
   }
 
   public isLastPage(): boolean {
-    return this.getPostsCount() < PAGE_POST_COUNT && this.getPostsCount() >= 0;
+    const postCount = this.getPostsCount();
+    return postCount < PAGE_POST_COUNT && postCount >= 0;
+  }
+
+  private dataToAttachment(data: IIncludeDataObject[]): IAttachment[] {
+    const sparseArray = data.map((val) => {
+      const urlSplit = val.attributes.url.split("?");
+      if (urlSplit.length > 1) {
+        const qsPart = urlSplit[1];
+        const result: IFileUrlQS | null | undefined = qs.parse(qsPart);
+        if (result !== null && result !== undefined) {
+          return {
+            name: val.attributes.name,
+            ...result,
+          };
+        }
+      }
+      console.error("file queryString parsing fail");
+      return null;
+    });
+    return sparseArray.filter((val) => val !== null) as IAttachment[];
   }
 
   private getPostsCount(): number {
