@@ -1,0 +1,30 @@
+{
+  "name": "patreon-down",
+  "version": "0.0.1",
+  "description": "Patreon downloader",
+  "repository": "none",
+  "main": "index.js",
+  "scripts": {
+    "app": "tsc && ts-node src/index.ts",
+    "tsc-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@types/tough-cookie": "^2.3.5",
+    "@types/node": "^11.10.4",
+    "@types/request": "^2.48.1",
+    "@types/content-disposition": "^0.5.2",
+    "@types/request-promise-native": "^1.0.15",
+    "@types/qs": "^6.5.2",
+    "moment": "^2.24.0",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7",
+    "tough-cookie": "^3.0.1",
+    "content-disposition": "^0.5.3",
+    "ts-node": "^8.0.2",
+    "tslint": "^5.13.1",
+    "tslint-sonarts": "^1.9.0",
+    "typescript": "^3.3.3333"
+  },
+  "author": "lavaLamp",
+  "license": "ISC"
+}
