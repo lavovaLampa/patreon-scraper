@@ -4,7 +4,7 @@ import { Request, Response } from "request";
 import { IAttachment } from "../../types/internal";
 import { PatreonRequest } from "../request/patreon-endpoint";
 
-export class PatreonAttachmentDownloader extends PatreonRequest {
+export class AttachmentDownloader extends PatreonRequest {
   protected queue: IAttachment[];
   protected existingFileSet: Set<string>;
   protected working: boolean;

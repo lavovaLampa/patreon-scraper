@@ -7,7 +7,7 @@ import { PatreonRequest } from "../request/patreon-endpoint";
 
 const PAGE_POST_COUNT = 12;
 
-export class PatreonAttachmentScrapper extends PatreonRequest {
+export class AttachmentScraper extends PatreonRequest {
   protected currPage: IStreamResponse | null = null;
   protected nextCursor: string | null = null;
 
@@ -25,7 +25,7 @@ export class PatreonAttachmentScrapper extends PatreonRequest {
     this.nextCursor = null;
   }
 
-  public async getNextStreamPage(): Promise<boolean> {
+  public async nextPage(): Promise<boolean> {
     const streamOptions: IStreamRequestOptions = {
       page: {
         cursor: this.nextCursor,

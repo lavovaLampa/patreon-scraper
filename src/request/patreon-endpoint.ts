@@ -6,20 +6,20 @@ import { IFileUrlQS, IStreamResponse, ITypedResponse } from "../../types/respons
 import { BasicAuthenticatedPatreonRequest } from "./request-proto";
 
 export class PatreonRequest extends BasicAuthenticatedPatreonRequest {
+  public async getCurrentUser(options?: ICurrentUserRequestOptions): Promise<request.FullResponse> {
+    const requestOptions: OptionsWithUrl = {
+      ...this.getRequestOptions,
+      qs: options,
+      url: "/api/current_user",
+    };
+    return request(requestOptions);
+  }
+
   protected async login(options?: any): Promise<ITypedResponse<any>> {
     const requestOptions: OptionsWithUrl = {
       ...this.postRequestOptions,
       qs: options,
       url: "/api/login",
-    };
-    return request(requestOptions);
-  }
-
-  protected async getCurrentUser(options?: ICurrentUserRequestOptions): Promise<request.FullResponse> {
-    const requestOptions: OptionsWithUrl = {
-      ...this.getRequestOptions,
-      qs: options,
-      url: "/api/current_user",
     };
     return request(requestOptions);
   }
