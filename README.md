@@ -1,8 +1,12 @@
 # patreon-scrapper
 WIP Patreon attachment download written in TypeScript
 
-# General information
+# Description
 Written in TypeScript because I like it. Hopefully will get better in future.
+
+# Requirements
+- NodeJS
+- npm
 
 # Installation
 - Clone repo
