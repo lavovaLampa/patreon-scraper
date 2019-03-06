@@ -1,7 +1,7 @@
-import { PatreonAttachmentScrapper } from './stream/patreon-stream';
-import { PatreonAttachmentDownloader } from './download/async-downloader';
+import { PatreonAttachmentDownloader } from "./download/async-downloader";
+import { PatreonAttachmentScrapper } from "./stream/patreon-stream";
 
-const sessionId = '';
+const sessionId = "";
 
 main();
 

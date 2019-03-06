@@ -1,8 +1,8 @@
-import { PatreonRequest } from '../request/patreon-endpoint';
-import { IAttachment } from '../../types/internal';
-import * as cd from 'content-disposition';
-import * as fs from 'fs';
-import { Request, Response } from 'request';
+import * as cd from "content-disposition";
+import * as fs from "fs";
+import { Request, Response } from "request";
+import { IAttachment } from "../../types/internal";
+import { PatreonRequest } from "../request/patreon-endpoint";
 
 export class PatreonAttachmentDownloader extends PatreonRequest {
   protected queue: IAttachment[];
@@ -19,8 +19,8 @@ export class PatreonAttachmentDownloader extends PatreonRequest {
 
   public getFileByIds({ h, i }: IAttachment): Request {
     const request = this.getFile({ h, i });
-    let fileName = 'parseError';
-    request.on('response',
+    const fileName = "parseError";
+    request.on("response",
       (response) => this.fileRequestResponseHandler({ fileName, request, response }));
     return request;
   }
@@ -35,19 +35,19 @@ export class PatreonAttachmentDownloader extends PatreonRequest {
 
     if (tempFile) {
       if (!this.existingFileSet.has(tempFile.name)) {
-        console.log(tempFile.name + '...');
+        console.log(tempFile.name + "...");
         const fileRequest = this.getFileByIds(tempFile);
 
-        fileRequest.on('complete', () => {
-          console.log('DONE');
+        fileRequest.on("complete", () => {
+          console.log("DONE");
           setTimeout(() => this.enqueueNext(), 1000 * Math.random());
         });
 
-        fileRequest.on('error', (err) => {
-          console.log('file download error: ' + err);
+        fileRequest.on("error", (err) => {
+          console.log("file download error: " + err);
         });
       } else {
-        console.log(tempFile.name + ' already downloaded, skipping...');
+        console.log(tempFile.name + " already downloaded, skipping...");
         return this.enqueueNext();
       }
     } else {
@@ -57,8 +57,8 @@ export class PatreonAttachmentDownloader extends PatreonRequest {
   }
 
   private fileRequestResponseHandler(this: void, params: IRequestHandler): void {
-    if (params.response.headers['content-disposition']) {
-      const parsedCd = cd.parse(params.response.headers['content-disposition']);
+    if (params.response.headers["content-disposition"]) {
+      const parsedCd = cd.parse(params.response.headers["content-disposition"]);
       if (parsedCd && parsedCd.parameters && parsedCd.parameters.filename) {
         params.fileName = parsedCd.parameters.filename;
       }
@@ -73,7 +73,7 @@ export class PatreonAttachmentDownloader extends PatreonRequest {
     }
   }
 
-  private checkDownloadedFiles(outDir = 'out'): void {
+  private checkDownloadedFiles(outDir = "out"): void {
     try {
       const stat = fs.lstatSync(outDir);
       if (stat.isDirectory()) {

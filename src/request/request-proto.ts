@@ -1,21 +1,21 @@
-import { IStringifyOptions } from 'qs';
-import { CookieJar, Cookie } from 'tough-cookie';
-import { RequestPromiseOptions } from 'request-promise-native';
+import { IStringifyOptions } from "qs";
+import { RequestPromiseOptions } from "request-promise-native";
+import { Cookie, CookieJar } from "tough-cookie";
 
-const BASE_URL = 'https://patreon.com';
+const BASE_URL = "https://patreon.com";
 const STRINGIFY_OPTIONS: IStringifyOptions = {
+  arrayFormat: "comma",
   encode: false,
-  arrayFormat: 'comma'
 };
 const DEFAULT_REQUEST_OPTIONS: RequestPromiseOptions = {
   baseUrl: BASE_URL,
-  host: 'www.patreon.com',
-  json: true,
-  resolveWithFullResponse: true,
-  qsStringifyOptions: STRINGIFY_OPTIONS,
   headers: {
-    'Referer': 'https://patreon.com/home'
-  }
+    Referer: "https://patreon.com/home",
+  },
+  host: "www.patreon.com",
+  json: true,
+  qsStringifyOptions: STRINGIFY_OPTIONS,
+  resolveWithFullResponse: true,
 };
 
 export abstract class BasicAuthenticatedPatreonRequest {
@@ -26,11 +26,11 @@ export abstract class BasicAuthenticatedPatreonRequest {
     this.sessionId = sessionId;
     this.cookieJar = new CookieJar();
     const cookie = new Cookie({
-      key: 'session_id',
-      value: `${sessionId}`,
       httpOnly: true,
+      key: "session_id",
+      path: "/",
       secure: true,
-      path: '/'
+      value: `${sessionId}`,
     });
     try {
       this.cookieJar.setCookieSync(cookie, BASE_URL);
@@ -41,20 +41,20 @@ export abstract class BasicAuthenticatedPatreonRequest {
 
   protected get getRequestOptions(): RequestPromiseOptions {
     const tempObj = DEFAULT_REQUEST_OPTIONS;
-    tempObj.method = 'GET';
+    tempObj.method = "GET";
     tempObj.headers = {
-      'Cookie': this.cookieJar.getCookieStringSync(BASE_URL),
-      ...tempObj.headers
+      Cookie: this.cookieJar.getCookieStringSync(BASE_URL),
+      ...tempObj.headers,
     };
     return tempObj;
   }
 
   protected get postRequestOptions(): RequestPromiseOptions {
     const tempObj = DEFAULT_REQUEST_OPTIONS;
-    tempObj.method = 'POST';
+    tempObj.method = "POST";
     tempObj.headers = {
-      'Cookie': this.cookieJar.getCookieStringSync(BASE_URL),
-      ...tempObj.headers
+      Cookie: this.cookieJar.getCookieStringSync(BASE_URL),
+      ...tempObj.headers,
     };
     return tempObj;
   }

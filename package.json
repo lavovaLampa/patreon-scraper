@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "app": "tsc && ts-node src/index.ts",
-    "tsc-check": "tsc --noEmit"
+    "tsc-check": "tsc --noEmit",
+    "lint": "tslint --project ./tsconfig.json 'src/**/*.{ts,tsx}'"
   },
   "dependencies": {
     "@types/tough-cookie": "^2.3.5",

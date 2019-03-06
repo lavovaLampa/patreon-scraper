@@ -1,43 +1,43 @@
-import { BasicAuthenticatedPatreonRequest } from './request-proto';
-import * as request from 'request-promise-native';
-import * as rqst from 'request';
-import { OptionsWithUrl } from 'request-promise-native';
-import { CurrentUserRequestOptions, StreamRequestOptions } from '../../types/request';
-import { TypedResponse, StreamResponse, IFileUrlQS } from '../../types/response';
+import * as rqst from "request";
+import * as request from "request-promise-native";
+import { OptionsWithUrl } from "request-promise-native";
+import { ICurrentUserRequestOptions, IStreamRequestOptions } from "../../types/request";
+import { IFileUrlQS, IStreamResponse, ITypedResponse } from "../../types/response";
+import { BasicAuthenticatedPatreonRequest } from "./request-proto";
 
 export class PatreonRequest extends BasicAuthenticatedPatreonRequest {
-  protected async login(options?: any): Promise<TypedResponse<any>> {
+  protected async login(options?: any): Promise<ITypedResponse<any>> {
     const requestOptions: OptionsWithUrl = {
       ...this.postRequestOptions,
-      url: '/api/login',
-      qs: options
+      qs: options,
+      url: "/api/login",
     };
     return request(requestOptions);
   }
 
-  protected async getCurrentUser(options?: CurrentUserRequestOptions): Promise<request.FullResponse> {
+  protected async getCurrentUser(options?: ICurrentUserRequestOptions): Promise<request.FullResponse> {
     const requestOptions: OptionsWithUrl = {
       ...this.getRequestOptions,
-      url: '/api/current_user',
-      qs: options
+      qs: options,
+      url: "/api/current_user",
     };
     return request(requestOptions);
   }
 
-  protected async getStream(options?: StreamRequestOptions): Promise<TypedResponse<StreamResponse>> {
+  protected async getStream(options?: IStreamRequestOptions): Promise<ITypedResponse<IStreamResponse>> {
     const requestOptions: OptionsWithUrl = {
       ...this.getRequestOptions,
-      url: '/api/stream',
-      qs: options
+      qs: options,
+      url: "/api/stream",
     };
     return request(requestOptions);
   }
 
-  protected async getSimilar(options?: any): Promise<TypedResponse<any>> {
+  protected async getSimilar(options?: any): Promise<ITypedResponse<any>> {
     const requestOptions: OptionsWithUrl = {
       ...this.getRequestOptions,
-      url: '/api/similar',
-      qs: options
+      qs: options,
+      url: "/api/similar",
     };
     return request(requestOptions);
   }
@@ -46,9 +46,9 @@ export class PatreonRequest extends BasicAuthenticatedPatreonRequest {
   protected getFile(identifier: IFileUrlQS): rqst.Request {
     const requestOptions: request.OptionsWithUrl = {
       ...this.getRequestOptions,
-      url: '/file',
+      json: false,
       qs: identifier,
-      json: false
+      url: "/file",
     };
     return rqst(requestOptions);
   }

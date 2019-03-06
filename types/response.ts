@@ -1,29 +1,29 @@
-import { FullResponse } from 'request-promise-native';
+import { FullResponse } from "request-promise-native";
 
-export interface TypedResponse<T> extends FullResponse {
+export interface ITypedResponse<T> extends FullResponse {
   body: T;
 }
 
-export interface StreamResponse {
-  data: PostData[];
-  included: IncludeDataObject[];
-  links?: LinkData;
+export interface IStreamResponse {
+  data: IPostData[];
+  included: IIncludeDataObject[];
+  links?: ILinkData;
   meta: { posts_count: number };
 }
 
-interface LinkData {
+interface ILinkData {
   first: string;
   next: string;
 }
 
-interface PostData {
-  attributes: PostAttributes;
+interface IPostData {
+  attributes: IPostAttributes;
   id: string;
-  relationships: Relationships;
+  relationships: IRelationships;
   type: DataTypeKey;
 }
 
-interface PostAttributes {
+interface IPostAttributes {
   comment_count: number;
   content: string;
   created_at: Date | null;
@@ -34,7 +34,7 @@ interface PostAttributes {
   edit_url: string;
   edited_at: Date | null;
   embed: any | null;
-  image: ImageAttributes;
+  image: IImageAttributes;
   is_automated_monthly_charge: boolean;
   is_paid: boolean;
   like_count: number;
@@ -43,37 +43,37 @@ interface PostAttributes {
   patreon_url: string;
   patron_count: number;
   pledge_url: string;
-  post_file: FileAttributes;
+  post_file: IFileAttributes;
   post_type: PostTypeKey;
   published_at: Date;
   scheduled_for: Date | null;
   teaser_text: string | null;
-  thumbnail: ThumbnailData;
+  thumbnail: IThumbnailData;
   title: string;
   url: string;
   was_posted_by_campaign_owner: boolean;
 }
 
-interface Relationships {
-  access_rules?: BasicRelationAttributes;
-  attachments?: BasicRelationAttributes;
-  campaign?: BasicRelationAttributes;
-  poll?: BasicRelationAttributes;
-  user?: BasicRelationAttributes;
-  user_defined_tags?: BasicRelationAttributes;
+interface IRelationships {
+  access_rules?: IBasicRelationAttributes;
+  attachments?: IBasicRelationAttributes;
+  campaign?: IBasicRelationAttributes;
+  poll?: IBasicRelationAttributes;
+  user?: IBasicRelationAttributes;
+  user_defined_tags?: IBasicRelationAttributes;
 }
 
-interface BasicRelationAttributes {
-  data: DataIdentifier;
+interface IBasicRelationAttributes {
+  data: IDataIdentifier;
   links?: { related: string };
 }
 
-interface DataIdentifier {
+interface IDataIdentifier {
   id: string;
   type: DataTypeKey;
 }
 
-interface ThumbnailData {
+interface IThumbnailData {
   huge: string;
   large: string;
   large_2: string;
@@ -87,12 +87,12 @@ interface ThumbnailData {
   url: string;
 }
 
-interface FileAttributes {
+interface IFileAttributes {
   name: string;
   url: string;
 }
 
-interface ImageAttributes {
+interface IImageAttributes {
   height: number;
   width: number;
   large_url: string;
@@ -101,17 +101,17 @@ interface ImageAttributes {
 }
 
 enum PostTypeKey {
-  Image = 'image_file'
+  Image = "image_file",
 }
 
 export enum DataTypeKey {
-  Attachment = 'attachment',
-  Post = 'post',
-  Reward = 'reward',
-  AccessRule = 'access-rule',
-  PostTag = 'post_tag',
-  Campaign = 'campaign',
-  User = 'user'
+  Attachment = "attachment",
+  Post = "post",
+  Reward = "reward",
+  AccessRule = "access-rule",
+  PostTag = "post_tag",
+  Campaign = "campaign",
+  User = "user",
 }
 
 export interface IFileUrlQS {
@@ -119,14 +119,14 @@ export interface IFileUrlQS {
   i: string;
 }
 
-export interface IncludeDataObject {
-  attributes: ObjectAttributes;
+export interface IIncludeDataObject {
+  attributes: IObjectAttributes;
   // numeric string
   id: string;
   type: DataTypeKey;
 }
 
-interface ObjectAttributes {
+interface IObjectAttributes {
   name: string;
   url: string;
 }
