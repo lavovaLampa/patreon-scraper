@@ -20,8 +20,8 @@ const DEFAULT_REQUEST_OPTIONS: RequestPromiseOptions = {
 };
 
 export abstract class BasicAuthenticatedPatreonRequest {
-  protected readonly sessionId: string;
   protected readonly cookieJar: CookieJar;
+  protected readonly sessionId: string;
 
   constructor(sessionId: string) {
     this.sessionId = sessionId;

@@ -5,12 +5,12 @@ interface ICommonRequestOptions { }
 export interface ICurrentUserRequestOptions extends ICommonRequestOptions { }
 
 export interface IStreamRequestOptions extends ICommonRequestOptions {
-  page?: IPageOptions;
+  fields?: IFieldOptions;
   filter?: IFilterOptions;
   include?: TIncludeStrings[];
-  fields?: IFieldOptions;
   "json-api-use-default-includes"?: boolean;
   "json-api-version"?: JsonApiVersionKey;
+  page?: IPageOptions;
 }
 
 type TIncludeStrings = "recent_comments.commenter" | "recent_comments.commenter.flairs.campaign" |
@@ -23,9 +23,9 @@ enum JsonApiVersionKey {
 
 interface IFieldOptions {
   comment?: CommentFieldKey[];
+  flair?: FlairFieldKey[];
   post?: PostFieldKey[];
   user?: UserFieldKey[];
-  flair?: FlairFieldKey[];
 }
 
 enum FlairFieldKey {
@@ -59,6 +59,6 @@ interface IFilterOptions {
 }
 
 interface IPageOptions {
-  cursor: string | null;
   count?: number;
+  cursor: string | null;
 }
