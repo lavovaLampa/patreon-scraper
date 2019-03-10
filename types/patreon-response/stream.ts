@@ -1,5 +1,5 @@
-import { IPost } from "./common";
-import { IGenericResponse } from "./response";
+import { IPost } from "../patreon-data-types/post";
+import { IGenericResponse } from "../response";
 
 export type TStreamResponse = IGenericResponse<IPost[], IStreamResponseMeta>;
 

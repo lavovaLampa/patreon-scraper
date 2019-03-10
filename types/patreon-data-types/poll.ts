@@ -1,7 +1,7 @@
 import {
   DataTypeKey, ICommonAttributes, ICommonDataProperties,
   ICommonRelationships, IDataIdentifier, IGenericRelationshipAttributes,
-} from "../common";
+} from "../response";
 
 export interface IPoll extends ICommonDataProperties {
   attributes: IPollAttributes;

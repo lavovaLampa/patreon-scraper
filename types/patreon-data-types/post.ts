@@ -2,7 +2,7 @@ import {
   DataTypeKey, ICommonAttributes, ICommonDataProperties,
   ICommonRelationshipArrayAttributes, ICommonRelationshipAttributes,
   ICommonRelationships, IGenericRelationshipAttributes,
-} from "./../common";
+} from "../response";
 
 export interface IPost extends ICommonDataProperties {
   attributes: IPostAttributes;
@@ -32,7 +32,7 @@ interface IPostAttributes extends ICommonAttributes {
   patron_count: number;
   pledge_url: string;
   post_file: IFileAttributes;
-  post_type: PostTypeKey;
+  post_type: ApiPostTypeKey;
   published_at: Date;
   scheduled_for?: Date | null;
   teaser_text: string | null;
@@ -52,21 +52,33 @@ interface IPostRelationships extends ICommonRelationships {
   user_defined_tags?: ICommonRelationshipArrayAttributes;
 }
 
-interface IFileAttributes extends ICommonAttributes {
+export interface IFileAttributes extends ICommonAttributes {
   name: string;
   url: string;
 }
 
 interface IImageAttributes extends ICommonAttributes {
   height: number;
-  width: number;
   large_url: string;
   thumb_url: string;
   url: string;
+  width: number;
 }
 
-enum PostTypeKey {
-  Image = "image_file",
+enum ApiPostTypeKey {
+  ImageFile = "image_file",
+  ImageEmbed = "image_embed",
+  AudioFile = "audio_file",
+  VideoEmbed = "video_embed",
+  AudioEmbed = "audio_embed",
+  Text = "text_only",
+  LegacyImage = "image",
+  Link = "link",
+  Poll = "poll",
+  Livestream = "livestream",
+  LivestreamCrowdcast = "livestream_crowdcast",
+  LivestreamYoutube = "livestream_youtube",
+  Deleted = "deleted",
 }
 
 interface IThumbnailData {

@@ -4,30 +4,50 @@ import { Request, Response } from "request";
 import { IAttachmentIdentifier } from "../../types/internal";
 import { PatreonRequest } from "../request/patreon-endpoint";
 
+const DEFAULT_OUTPUT_DIR = "attachment_out";
+
 export class AttachmentDownloader extends PatreonRequest {
-  protected queue: IAttachmentIdentifier[];
   protected existingFileSet: Set<string>;
+  protected readonly outputDirectory: string;
+  protected queue: IAttachmentIdentifier[];
   protected working: boolean;
 
-  constructor(sessionId: string, fileList?: IAttachmentIdentifier[]) {
+  constructor(sessionId: string, fileList?: IAttachmentIdentifier[], options?: IDownloaderOptions) {
     super(sessionId);
     this.queue = fileList ? fileList : [];
     this.existingFileSet = new Set();
     this.working = false;
+    this.outputDirectory = (options && options.outputDirectory) ? options.outputDirectory : DEFAULT_OUTPUT_DIR;
     this.checkDownloadedFiles();
-  }
-
-  public getFileByIds({ h, i }: IAttachmentIdentifier): Request {
-    const request = this.getFile({ h, i });
-    const fileName = "parseError";
-    request.on("response",
-      (response) => this.fileRequestResponseHandler({ fileName, request, response }));
-    return request;
   }
 
   public addToQueue(files: IAttachmentIdentifier[]): void {
     this.queue.push(...files);
     this.runQueue();
+  }
+
+  public getFileByIds({ h, i }: IAttachmentIdentifier): Request {
+    const request = this.getFile({ h, i });
+    const fileName = "parseError";
+    request.on("response", (response) => this.fileRequestResponseHandler({
+      fileName,
+      outputDirectory: this.outputDirectory,
+      request,
+      response,
+    }));
+    return request;
+  }
+
+  private checkDownloadedFiles(): void {
+    try {
+      const stat = fs.lstatSync(this.outputDirectory);
+      if (stat.isDirectory()) {
+        const dir = fs.readdirSync(this.outputDirectory);
+        this.existingFileSet = new Set(dir);
+      }
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   private async enqueueNext(): Promise<void> {
@@ -63,7 +83,7 @@ export class AttachmentDownloader extends PatreonRequest {
         params.fileName = parsedCd.parameters.filename;
       }
     }
-    params.request.pipe(fs.createWriteStream(`out/${params.fileName}`));
+    params.request.pipe(fs.createWriteStream(`${params.outputDirectory}/${params.fileName}`));
   }
 
   private runQueue(): void {
@@ -73,21 +93,15 @@ export class AttachmentDownloader extends PatreonRequest {
     }
   }
 
-  private checkDownloadedFiles(outDir = "out"): void {
-    try {
-      const stat = fs.lstatSync(outDir);
-      if (stat.isDirectory()) {
-        const dir = fs.readdirSync(outDir);
-        this.existingFileSet = new Set(dir);
-      }
-    } catch (e) {
-      console.log(e);
-    }
-  }
+}
+
+interface IDownloaderOptions {
+  outputDirectory: string;
 }
 
 interface IRequestHandler {
+  fileName: string;
+  outputDirectory: string;
   request: Request;
   response: Response;
-  fileName: string;
 }

@@ -1,10 +1,11 @@
 import * as moment from "moment";
 import * as qs from "qs";
-import { DataTypeKey, IAttachment } from "../../types/common";
 import { IAttachmentIdentifier, IFileUrlQS } from "../../types/internal";
+import { IAttachment } from "../../types/patreon-data-types/attachment";
+import { IFileAttributes } from "../../types/patreon-data-types/post";
+import { TStreamResponse } from "../../types/patreon-response/stream";
 import { IStreamRequestOptions } from "../../types/request";
-import { ITypedResponse } from "../../types/response";
-import { TStreamResponse } from "../../types/stream-response";
+import { DataTypeKey, ITypedResponse } from "../../types/response";
 import { PatreonRequest } from "../request/patreon-endpoint";
 
 const PAGE_POST_COUNT = 12;
@@ -23,9 +24,28 @@ export class AttachmentScraper extends PatreonRequest {
     }
   }
 
-  public resetState(): void {
-    this.currPage = null;
-    this.nextCursor = null;
+  public getCurrPostFiles(): IFileAttributes[] {
+    if (this.currPage && this.currPage.data) {
+      const postsWithoutAttachment = this.currPage.data.filter((post) => {
+        if (post.relationships && post.relationships.attachments) {
+          return false;
+        } else {
+          if (post.attributes && post.attributes.post_file) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      });
+      return postsWithoutAttachment.map((post) => post.attributes.post_file);
+    } else {
+      return [];
+    }
+  }
+
+  public isLastPage(): boolean {
+    const postCount = this.getPostsCount();
+    return postCount < PAGE_POST_COUNT && postCount >= 0;
   }
 
   public async nextPage(): Promise<boolean> {
@@ -55,9 +75,9 @@ export class AttachmentScraper extends PatreonRequest {
     }
   }
 
-  public isLastPage(): boolean {
-    const postCount = this.getPostsCount();
-    return postCount < PAGE_POST_COUNT && postCount >= 0;
+  public resetState(): void {
+    this.currPage = null;
+    this.nextCursor = null;
   }
 
   private dataToAttachment(data: IAttachment[]): IAttachmentIdentifier[] {

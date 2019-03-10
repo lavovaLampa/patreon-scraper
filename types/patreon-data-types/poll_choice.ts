@@ -1,4 +1,4 @@
-import { DataTypeKey, ICommonAttributes, ICommonDataProperties } from "../common";
+import { DataTypeKey, ICommonAttributes, ICommonDataProperties } from "../response";
 
 export interface IPollChoice extends ICommonDataProperties {
   attributes: IPollChoiceAttributes;

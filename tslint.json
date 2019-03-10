@@ -6,6 +6,12 @@
     ],
     "jsRules": {},
     "rules": {
+        "member-ordering": {
+            "options": {
+                "alphabetize": true,
+                "order": "fields-first"
+            }
+        },
         "no-console": {
             "options": ["console.log"],
             "severity": "warning"

@@ -1,7 +1,7 @@
 import {
   DataTypeKey, ICommonAttributes, ICommonDataProperties,
   ICommonRelationships, IGenericRelationshipAttributes,
-} from "../common";
+} from "../response";
 
 export interface IAccessRule extends ICommonDataProperties {
   attributes: IAccessRuleAttributes;
