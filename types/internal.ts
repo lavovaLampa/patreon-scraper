@@ -1,5 +1,8 @@
-import { IFileUrlQS } from "./response";
-
-export interface IAttachment extends IFileUrlQS {
+export interface IAttachmentIdentifier extends IFileUrlQS {
   name: string;
+}
+
+export interface IFileUrlQS {
+  h: string;
+  i: string;
 }

@@ -28,7 +28,6 @@ async function testAuth(): Promise<boolean> {
   try {
     const response = await patreonRequest.getCurrentUser();
     if (response) {
-      console.log(response.body);
       return response.statusCode === 200;
     } else {
       return false;

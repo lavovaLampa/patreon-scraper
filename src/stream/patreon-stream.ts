@@ -1,19 +1,22 @@
 import * as moment from "moment";
 import * as qs from "qs";
-import { IAttachment } from "../../types/internal";
+import { DataTypeKey, IAttachment } from "../../types/common";
+import { IAttachmentIdentifier, IFileUrlQS } from "../../types/internal";
 import { IStreamRequestOptions } from "../../types/request";
-import { DataTypeKey, IFileUrlQS, IIncludeDataObject, IStreamResponse, ITypedResponse } from "../../types/response";
+import { ITypedResponse } from "../../types/response";
+import { TStreamResponse } from "../../types/stream-response";
 import { PatreonRequest } from "../request/patreon-endpoint";
 
 const PAGE_POST_COUNT = 12;
 
 export class AttachmentScraper extends PatreonRequest {
-  protected currPage: IStreamResponse | null = null;
+  protected currPage: TStreamResponse | null = null;
   protected nextCursor: string | null = null;
 
-  public getCurrAttachments(): IAttachment[] {
+  public getCurrAttachments(): IAttachmentIdentifier[] {
     if (this.currPage && this.currPage.included) {
-      const attachments = this.currPage.included.filter((obj) => obj.type === DataTypeKey.Attachment);
+      const attachments =
+        this.currPage.included.filter((obj) => obj.type === DataTypeKey.Attachment) as any as IAttachment[];
       return this.dataToAttachment(attachments);
     } else {
       return [];
@@ -31,7 +34,7 @@ export class AttachmentScraper extends PatreonRequest {
         cursor: this.nextCursor,
       },
     };
-    let response: ITypedResponse<IStreamResponse> | null = null;
+    let response: ITypedResponse<TStreamResponse> | null = null;
 
     try {
       response = await this.getStream(streamOptions);
@@ -57,7 +60,7 @@ export class AttachmentScraper extends PatreonRequest {
     return postCount < PAGE_POST_COUNT && postCount >= 0;
   }
 
-  private dataToAttachment(data: IIncludeDataObject[]): IAttachment[] {
+  private dataToAttachment(data: IAttachment[]): IAttachmentIdentifier[] {
     const sparseArray = data.map((val) => {
       const urlSplit = val.attributes.url.split("?");
       if (urlSplit.length > 1) {
@@ -73,7 +76,7 @@ export class AttachmentScraper extends PatreonRequest {
       console.error("file queryString parsing fail");
       return null;
     });
-    return sparseArray.filter((val) => val !== null) as IAttachment[];
+    return sparseArray.filter((val) => val !== null) as IAttachmentIdentifier[];
   }
 
   private getPostsCount(): number {

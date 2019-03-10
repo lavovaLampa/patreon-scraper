@@ -1,15 +1,15 @@
 import * as cd from "content-disposition";
 import * as fs from "fs";
 import { Request, Response } from "request";
-import { IAttachment } from "../../types/internal";
+import { IAttachmentIdentifier } from "../../types/internal";
 import { PatreonRequest } from "../request/patreon-endpoint";
 
 export class AttachmentDownloader extends PatreonRequest {
-  protected queue: IAttachment[];
+  protected queue: IAttachmentIdentifier[];
   protected existingFileSet: Set<string>;
   protected working: boolean;
 
-  constructor(sessionId: string, fileList?: IAttachment[]) {
+  constructor(sessionId: string, fileList?: IAttachmentIdentifier[]) {
     super(sessionId);
     this.queue = fileList ? fileList : [];
     this.existingFileSet = new Set();
@@ -17,7 +17,7 @@ export class AttachmentDownloader extends PatreonRequest {
     this.checkDownloadedFiles();
   }
 
-  public getFileByIds({ h, i }: IAttachment): Request {
+  public getFileByIds({ h, i }: IAttachmentIdentifier): Request {
     const request = this.getFile({ h, i });
     const fileName = "parseError";
     request.on("response",
@@ -25,7 +25,7 @@ export class AttachmentDownloader extends PatreonRequest {
     return request;
   }
 
-  public addToQueue(files: IAttachment[]): void {
+  public addToQueue(files: IAttachmentIdentifier[]): void {
     this.queue.push(...files);
     this.runQueue();
   }
