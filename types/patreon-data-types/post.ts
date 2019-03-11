@@ -1,7 +1,6 @@
 import {
   DataTypeKey, ICommonAttributes, ICommonDataProperties,
-  ICommonRelationshipArrayAttributes, ICommonRelationshipAttributes,
-  ICommonRelationships, IGenericRelationshipAttributes,
+  ICommonRelationshipAttributes, ICommonRelationships, IGenericRelationshipAttributes,
 } from "../response";
 
 export interface IPost extends ICommonDataProperties {
@@ -44,12 +43,12 @@ interface IPostAttributes extends ICommonAttributes {
 }
 
 interface IPostRelationships extends ICommonRelationships {
-  access_rules?: ICommonRelationshipArrayAttributes;
-  attachments?: ICommonRelationshipArrayAttributes;
+  access_rules?: ICommonRelationshipAttributes[];
+  attachments?: ICommonRelationshipAttributes[];
   campaign?: ICommonRelationshipAttributes;
   poll?: IGenericRelationshipAttributes<any | null, void>;
   user?: ICommonRelationshipAttributes;
-  user_defined_tags?: ICommonRelationshipArrayAttributes;
+  user_defined_tags?: ICommonRelationshipAttributes[];
 }
 
 export interface IFileAttributes extends ICommonAttributes {
@@ -65,7 +64,7 @@ interface IImageAttributes extends ICommonAttributes {
   width: number;
 }
 
-enum ApiPostTypeKey {
+export enum ApiPostTypeKey {
   ImageFile = "image_file",
   ImageEmbed = "image_embed",
   AudioFile = "audio_file",

@@ -1,6 +1,6 @@
 import {
   DataTypeKey, ICommonAttributes, ICommonDataProperties,
-  ICommonRelationshipArrayAttributes, ICommonRelationshipAttributes, ICommonRelationships,
+  ICommonRelationshipAttributes, ICommonRelationships,
 } from "../response";
 
 export interface IUser extends ICommonDataProperties {
@@ -43,7 +43,7 @@ interface IUserAttributes extends ICommonAttributes {
 
 interface IUserRelationships extends ICommonRelationships {
   campaign?: ICommonRelationshipAttributes;
-  memberships?: ICommonRelationshipArrayAttributes;
+  memberships?: ICommonRelationshipAttributes[];
 }
 
 interface ISocialConnections {

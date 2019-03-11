@@ -2,7 +2,7 @@ import * as moment from "moment";
 import * as qs from "qs";
 import { IAttachmentIdentifier, IFileUrlQS } from "../../types/internal";
 import { IAttachment } from "../../types/patreon-data-types/attachment";
-import { IFileAttributes } from "../../types/patreon-data-types/post";
+import { ApiPostTypeKey, IFileAttributes } from "../../types/patreon-data-types/post";
 import { TStreamResponse } from "../../types/patreon-response/stream";
 import { IStreamRequestOptions } from "../../types/request";
 import { DataTypeKey, ITypedResponse } from "../../types/response";
@@ -26,15 +26,15 @@ export class AttachmentScraper extends PatreonRequest {
 
   public getCurrPostFiles(): IFileAttributes[] {
     if (this.currPage && this.currPage.data) {
-      const postsWithoutAttachment = this.currPage.data.filter((post) => {
+      const validImagePosts = this.currPage.data.filter((post) => {
+        return post && post.attributes && post.attributes.post_type === ApiPostTypeKey.ImageFile
+          && post.attributes.post_file;
+      });
+      const postsWithoutAttachment = validImagePosts.filter((post) => {
         if (post.relationships && post.relationships.attachments) {
-          return false;
+          return post.relationships.attachments.length === 0;
         } else {
-          if (post.attributes && post.attributes.post_file) {
-            return true;
-          } else {
-            return false;
-          }
+          return true;
         }
       });
       return postsWithoutAttachment.map((post) => post.attributes.post_file);

@@ -30,7 +30,6 @@ export interface ICommonAttributes { }
 export interface ICommonRelationships { }
 
 export type ICommonRelationshipAttributes = IGenericRelationshipAttributes<IDataIdentifier, ICommonLinks>;
-export type ICommonRelationshipArrayAttributes = IGenericRelationshipAttributes<IDataIdentifier[], ICommonLinks>;
 
 export interface IGenericRelationshipAttributes<T, U extends ICommonLinks | void> {
   data: T;
