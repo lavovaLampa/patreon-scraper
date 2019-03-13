@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "description": "Very WIP Patreon downloader",
   "repository": "none",
-  "main": "index.js",
+  "main": "src/index.ts",
   "scripts": {
-    "app": "tsc && ts-node src/index.ts",
+    "app": "ts-node src/index.ts",
     "tsc-check": "tsc --noEmit",
     "lint": "tslint --project ./tsconfig.json 'src/**/*.{ts,tsx}'"
   },
@@ -29,5 +29,5 @@
     "tslint-sonarts": "^1.9.0"
   },
   "author": "lavaLamp",
-  "license": "ISC"
+  "license": "MIT"
 }

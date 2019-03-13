@@ -17,8 +17,10 @@
     "strictPropertyInitialization": true,
     "strictNullChecks": true,
     "strict": true,
-    "outDir": "js",
-    "noEmit": true
+    "outDir": "/js",
+    "noEmit": true,
+    "checkJs": true,
+    "allowJs": true
   },
   "include": [
     "src/**/*"
