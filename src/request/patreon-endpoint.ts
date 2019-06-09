@@ -1,6 +1,5 @@
 import * as rqst from "request";
 import * as request from "request-promise-native";
-import { OptionsWithUrl } from "request-promise-native";
 import { IFileUrlQS } from "../../types/internal";
 import { TCurrentUserResponse } from "../../types/patreon-response/current_user";
 import { TPostsResponse } from "../../types/patreon-response/posts";
@@ -10,36 +9,21 @@ import { ITypedResponse } from "../../types/response";
 import { BasicAuthenticatedPatreonRequest } from "./request-proto";
 
 export class PatreonRequest extends BasicAuthenticatedPatreonRequest {
+
+  public async getCampaign(campaignId: string, options?: any): Promise<ITypedResponse<any>> {
+    return this.getRequestProto(`api/campaigns/${campaignId}`, options);
+  }
+
+  public async getCampaignPostTags(campaignId: string, options?: any): Promise<ITypedResponse<any>> {
+    return this.getRequestProto(`api/campaigns/${campaignId}/post-tags`, options);
+  }
   public async getCurrentUser(options?: ICurrentUserRequestOptions): Promise<ITypedResponse<TCurrentUserResponse>> {
-    const requestOptions: OptionsWithUrl = {
-      ...this.getRequestOptions,
-      qs: options,
-      url: "/api/current_user",
-    };
-    return request(requestOptions);
-  }
-
-  protected async getCampaign(campaignId: string, options?: any): Promise<ITypedResponse<any>> {
-    const requestOptions: OptionsWithUrl = {
-      ...this.getRequestOptions,
-      qs: options,
-      url: `/api/campaigns/${campaignId}`,
-    };
-    return request(requestOptions);
-  }
-
-  protected async getCampaignPostTags(campaignId: string, options?: any): Promise<ITypedResponse<any>> {
-    const requestOptions: OptionsWithUrl = {
-      ...this.getRequestOptions,
-      qs: options,
-      url: `/api/campaigns/${campaignId}/post-tags`,
-    };
-    return request(requestOptions);
+    return this.getRequestProto("api/current_user", options);
   }
 
   // TODO: this is not happening?
   // should return 302 Found, redirect to real file
-  protected getFile(identifier: IFileUrlQS): rqst.Request {
+  public getFile(identifier: IFileUrlQS): rqst.Request {
     const requestOptions: request.OptionsWithUrl = {
       ...this.getRequestOptions,
       json: false,
@@ -50,66 +34,47 @@ export class PatreonRequest extends BasicAuthenticatedPatreonRequest {
   }
 
   // TODO: response type
-  protected async getPosts(options?: any): Promise<ITypedResponse<TPostsResponse>> {
-    const requestOptions: OptionsWithUrl = {
-      ...this.getRequestOptions,
-      qs: options,
-      url: "/api/posts",
-    };
-    return request(requestOptions);
+  public async getPosts(options?: any): Promise<ITypedResponse<TPostsResponse>> {
+    return this.getRequestProto("api/posts", options);
   }
 
-  protected async getRewardItems(options?: any): Promise<ITypedResponse<any>> {
-    const requestOptions: OptionsWithUrl = {
-      ...this.getRequestOptions,
-      qs: options,
-      url: "/api/reward-items",
-    };
-    return request(requestOptions);
+  public async getRewardItems(options?: any): Promise<ITypedResponse<any>> {
+    return this.getRequestProto("api/reward-items", options);
   }
 
-  protected async getRewards(rewardId: string, options?: any): Promise<ITypedResponse<any>> {
-    const requestOptions: OptionsWithUrl = {
-      ...this.getRequestOptions,
-      qs: options,
-      url: `/api/rewards/${rewardId}`,
-    };
-    return request(requestOptions);
+  public async getRewards(rewardId: string, options?: any): Promise<ITypedResponse<any>> {
+    return this.getRequestProto(`api/rewards/${rewardId}`, options);
   }
 
-  protected async getSimilar(options?: any): Promise<ITypedResponse<any>> {
-    const requestOptions: OptionsWithUrl = {
-      ...this.getRequestOptions,
-      qs: options,
-      url: "/api/similar",
-    };
-    return request(requestOptions);
+  public async getSimilar(options?: any): Promise<ITypedResponse<any>> {
+    return this.getRequestProto("api/similar", options);
   }
 
-  protected async getStream(options?: IStreamRequestOptions): Promise<ITypedResponse<TStreamResponse>> {
-    const requestOptions: OptionsWithUrl = {
-      ...this.getRequestOptions,
-      qs: options,
-      url: "/api/stream",
-    };
-    return request(requestOptions);
+  public async getStream(options?: IStreamRequestOptions): Promise<ITypedResponse<TStreamResponse>> {
+    return this.getRequestProto("api/stream", options);
   }
 
-  protected async getUserInfo(userId: string, options?: any): Promise<ITypedResponse<any>> {
-    const requestOptions: OptionsWithUrl = {
-      ...this.getRequestOptions,
-      qs: options,
-      url: `/api/user/${userId}`,
-    };
-    return request(requestOptions);
+  public async getUserInfo(userId: string, options?: any): Promise<ITypedResponse<any>> {
+    return this.getRequestProto(`api/user/${userId}`, options);
   }
 
-  protected async login(options?: any): Promise<ITypedResponse<any>> {
-    const requestOptions: OptionsWithUrl = {
+  public async login(options?: any): Promise<ITypedResponse<any>> {
+    return this.postRequestProto("api/login", options);
+  }
+
+  private async getRequestProto(url: string, options?: any) {
+    return request({
+      ...this.getRequestOptions,
+      qs: options,
+      url,
+    });
+  }
+
+  private async postRequestProto(url: string, options?: any) {
+    return request({
       ...this.postRequestOptions,
       qs: options,
-      url: "/api/login",
-    };
-    return request(requestOptions);
+      url,
+    });
   }
 }

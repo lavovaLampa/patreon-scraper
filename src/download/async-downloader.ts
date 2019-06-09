@@ -6,17 +6,17 @@ import { PatreonRequest } from "../request/patreon-endpoint";
 
 const DEFAULT_OUTPUT_DIR = "attachment_out";
 
-export class AttachmentDownloader extends PatreonRequest {
-  protected existingFileSet: Set<string>;
+export class AttachmentDownloader {
+  protected existingFileSet: Set<string> = new Set();
   protected readonly outputDirectory: string;
   protected queue: IAttachmentIdentifier[];
-  protected working: boolean;
+  protected working: boolean = false;
 
-  constructor(sessionId: string, fileList?: IAttachmentIdentifier[], options?: IDownloaderOptions) {
-    super(sessionId);
+  private readonly request: PatreonRequest;
+
+  constructor(request: PatreonRequest, fileList?: IAttachmentIdentifier[], options?: IDownloaderOptions) {
+    this.request = request;
     this.queue = fileList ? fileList : [];
-    this.existingFileSet = new Set();
-    this.working = false;
     this.outputDirectory = (options && options.outputDirectory) ? options.outputDirectory : DEFAULT_OUTPUT_DIR;
     this.checkDownloadedFiles();
   }
@@ -27,7 +27,7 @@ export class AttachmentDownloader extends PatreonRequest {
   }
 
   public getFileByIds({ h, i }: IAttachmentIdentifier): Request {
-    const request = this.getFile({ h, i });
+    const request = this.request.getFile({ h, i });
     const fileName = "parseError";
     request.on("response", (response) => this.fileRequestResponseHandler({
       fileName,
@@ -39,14 +39,25 @@ export class AttachmentDownloader extends PatreonRequest {
   }
 
   private checkDownloadedFiles(): void {
-    try {
-      const stat = fs.lstatSync(this.outputDirectory);
-      if (stat.isDirectory()) {
-        const dir = fs.readdirSync(this.outputDirectory);
-        this.existingFileSet = new Set(dir);
+    if (fs.existsSync(this.outputDirectory)) {
+      try {
+        const stat = fs.lstatSync(this.outputDirectory);
+        if (stat.isDirectory()) {
+          const dir = fs.readdirSync(this.outputDirectory);
+          this.existingFileSet = new Set(dir);
+        }
+      } catch (e) {
+        console.error(e);
       }
-    } catch (e) {
-      console.log(e);
+    } else {
+      console.log("output directory doesn't exist");
+      console.log("creating folder now...");
+      try {
+        fs.mkdirSync(this.outputDirectory);
+      } catch (e) {
+        console.log("failed to create new directory");
+        console.error(e);
+      }
     }
   }
 

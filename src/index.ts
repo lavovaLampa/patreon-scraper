@@ -2,13 +2,14 @@ import { AttachmentDownloader } from "./download/async-downloader";
 import { PatreonRequest } from "./request/patreon-endpoint";
 import { AttachmentScraper } from "./stream/patreon-stream";
 
-const sessionId = "";
+const sessionId = "H_2TlmoS9e06Z4taGn-3WSsQk-ONqjSyktQ1rm461tU";
 
 main();
 
 async function main() {
-  const patreonScraper = new AttachmentScraper(sessionId);
-  const patreonDownloader = new AttachmentDownloader(sessionId);
+  const patreonRequest = new PatreonRequest(sessionId);
+  const patreonScraper = new AttachmentScraper(patreonRequest);
+  const patreonDownloader = new AttachmentDownloader(patreonRequest);
 
   if (await testAuth()) {
     while (!patreonScraper.isLastPage()) {

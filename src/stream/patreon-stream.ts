@@ -10,9 +10,14 @@ import { PatreonRequest } from "../request/patreon-endpoint";
 
 const PAGE_POST_COUNT = 12;
 
-export class AttachmentScraper extends PatreonRequest {
-  protected currPage: TStreamResponse | null = null;
-  protected nextCursor: string | null = null;
+export class AttachmentScraper {
+  private currPage: TStreamResponse | null = null;
+  private nextCursor: string | null = null;
+  private readonly request: PatreonRequest;
+
+  constructor(request: PatreonRequest) {
+    this.request = request;
+  }
 
   public getCurrAttachments(): IAttachmentIdentifier[] {
     if (this.currPage && this.currPage.included) {
@@ -57,7 +62,7 @@ export class AttachmentScraper extends PatreonRequest {
     let response: ITypedResponse<TStreamResponse> | null = null;
 
     try {
-      response = await this.getStream(streamOptions);
+      response = await this.request.getStream(streamOptions);
     } catch (e) {
       console.error("failed to execute request");
       console.error(e);
