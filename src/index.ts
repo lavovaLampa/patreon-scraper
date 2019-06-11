@@ -2,7 +2,7 @@ import { AttachmentDownloader } from "./download/async-downloader";
 import { PatreonRequest } from "./request/patreon-endpoint";
 import { AttachmentScraper } from "./stream/patreon-stream";
 
-const sessionId = "H_2TlmoS9e06Z4taGn-3WSsQk-ONqjSyktQ1rm461tU";
+const sessionId = "";
 
 main();
 
