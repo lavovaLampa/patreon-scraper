@@ -21,8 +21,6 @@ export class PatreonRequest extends BasicAuthenticatedPatreonRequest {
     return this.getRequestProto("api/current_user", options);
   }
 
-  // TODO: this is not happening?
-  // should return 302 Found, redirect to real file
   public getFile(identifier: IFileUrlQS): rqst.Request {
     const requestOptions: request.OptionsWithUrl = {
       ...this.getRequestOptions,
