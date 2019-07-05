@@ -1,18 +1,18 @@
 import * as moment from "moment";
 import * as qs from "qs";
-import { IAttachmentIdentifier, IFileUrlQS } from "../../types/internal";
-import { IAttachment } from "../../types/patreon-data-types/attachment";
-import { ApiPostTypeKey, IFileAttributes } from "../../types/patreon-data-types/post";
-import { TStreamResponse } from "../../types/patreon-response/stream";
-import { IStreamRequestOptions } from "../../types/request";
-import { DataTypeKey, ITypedResponse } from "../../types/response";
-import { PatreonRequest } from "../request/patreon-endpoint";
+import { IAttachmentIdentifier, IFileUrlQS, Maybe } from "../types/internal";
+import { IAttachment } from "../types/patreon-data-types/attachment";
+import { ApiPostTypeKey, IFileAttributes } from "../types/patreon-data-types/post";
+import { TStreamResponse } from "../types/patreon-response/stream";
+import { IStreamRequestOptions } from "../types/request";
+import { DataTypeKey } from "../types/response";
+import { PatreonRequest } from "./request/patreon-endpoint";
 
 const PAGE_POST_COUNT = 12;
 
 export class AttachmentScraper {
-  private currPage: TStreamResponse | null = null;
-  private nextCursor: string | null = null;
+  private currPage: Maybe<TStreamResponse> = null;
+  private nextCursor: Maybe<string> = null;
   private readonly request: PatreonRequest;
 
   constructor(request: PatreonRequest) {
@@ -21,8 +21,8 @@ export class AttachmentScraper {
 
   public getCurrAttachments(): IAttachmentIdentifier[] {
     if (this.currPage && this.currPage.included) {
-      const attachments =
-        this.currPage.included.filter((obj) => obj.type === DataTypeKey.Attachment) as any as IAttachment[];
+      const attachments = this.currPage.included.filter(
+        (obj) => obj.type === DataTypeKey.Attachment) as any as IAttachment[];
       return this.dataToAttachment(attachments);
     } else {
       return [];
@@ -36,11 +36,8 @@ export class AttachmentScraper {
           && post.attributes.post_file;
       });
       const postsWithoutAttachment = validImagePosts.filter((post) => {
-        if (post.relationships && post.relationships.attachments) {
-          return post.relationships.attachments.length === 0;
-        } else {
-          return true;
-        }
+        return !(post.relationships && post.relationships.attachments &&
+          post.relationships.attachments.length > 0);
       });
       return postsWithoutAttachment.map((post) => post.attributes.post_file);
     } else {
@@ -54,30 +51,24 @@ export class AttachmentScraper {
   }
 
   public async nextPage(): Promise<boolean> {
-    const streamOptions: IStreamRequestOptions = {
-      page: {
-        cursor: this.nextCursor,
-      },
-    };
-    let response: ITypedResponse<TStreamResponse> | null = null;
+    const streamOptions: IStreamRequestOptions = { page: { cursor: this.nextCursor } };
 
     try {
-      response = await this.request.getStream(streamOptions);
+      const { statusCode, body } = await this.request.getStream(streamOptions);
+      if (statusCode === 200 && body) {
+        this.currPage = body;
+        this.nextCursor = this.isLastPage() ? this.nextCursor : this.nextCursorLocation();
+        return true;
+      } else {
+        console.warn("received status code: " + statusCode);
+        console.warn("page state not updated");
+      }
     } catch (e) {
       console.error("failed to execute request");
       console.error(e);
     }
-    if (response && response.body !== undefined && response.statusCode === 200) {
-      this.currPage = response.body;
-      this.nextCursor = this.isLastPage() ? this.nextCursor : this.nextCursorLocation();
-      return true;
-    } else if (response !== null) {
-      console.log("received status code: " + response.statusCode);
-      console.log("page state not updated");
-      return false;
-    } else {
-      return false;
-    }
+
+    return false;
   }
 
   public resetState(): void {
@@ -112,7 +103,7 @@ export class AttachmentScraper {
     }
   }
 
-  private nextCursorLocation(): string | null {
+  private nextCursorLocation(): Maybe<string> {
     if (this.currPage && this.currPage.data && this.currPage.data.length > 0) {
       const lastPost = this.currPage.data[this.currPage.data.length - 1];
       if (lastPost && lastPost.attributes && lastPost.attributes.published_at) {

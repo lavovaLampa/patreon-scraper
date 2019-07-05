@@ -1,8 +1,8 @@
 import * as cd from "content-disposition";
 import * as fs from "fs";
 import { Request, Response } from "request";
-import { IAttachmentIdentifier } from "../../types/internal";
-import { PatreonRequest } from "../request/patreon-endpoint";
+import { IAttachmentIdentifier } from "../types/internal";
+import { PatreonRequest } from "./request/patreon-endpoint";
 
 const DEFAULT_OUTPUT_DIR = "attachment_out";
 

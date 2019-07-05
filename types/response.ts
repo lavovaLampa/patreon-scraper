@@ -25,8 +25,10 @@ export interface ICommonDataProperties {
 
 export type TDataObject = IUser | IPost | IPollChoice | IPostTag | IAccessRule | IAttachment | ICampaign | IPoll;
 
+// tslint:disable-next-line: no-empty-interface
 export interface ICommonAttributes { }
 
+// tslint:disable-next-line: no-empty-interface
 export interface ICommonRelationships { }
 
 export type ICommonRelationshipAttributes = IGenericRelationshipAttributes<IDataIdentifier, ICommonLinks>;
