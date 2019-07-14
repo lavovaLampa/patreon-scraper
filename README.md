@@ -1,5 +1,5 @@
-# patreon-scraper
-WIP Patreon attachment download written in TypeScript
+# Patreon-scraper
+Patreon-scraper is a Patreon attachment scraper/downloader written in TypeScript.
 
 # Description
 A work-in-progress Patreon attachment downloader. Currently tries to download all attachments to specified folder (otherwise defaults to "./attachments_out"), skipping files that exist (checks filename).
