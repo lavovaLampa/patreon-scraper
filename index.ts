@@ -29,7 +29,10 @@ async function main() {
       }
     }
   } else {
-    console.log("user not authorized");
+    console.log("User not authorized");
+    if (sessionId.length === 0) {
+      console.warn("Session ID is empty, you probably forgot to provide one");
+    }
   }
 }
 
@@ -52,6 +55,9 @@ async function parseOptions(availableArgs: ReadonlyArray<IOptionDefinition<strin
         process.exit(1);
       }
     }
+  } else {
+    console.error("Wrong number of arguments provided, try running with --help");
+    process.exit(1);
   }
 }
 
@@ -95,7 +101,7 @@ function printHelp(): void {
   console.log(
     "patreon-scraper 0.0.1\n\n" +
     "Usage:\n" +
-    "\tpatreon-scraper [-s<sessionId>][-o<outputDir>]\n\n" +
+    "\tpatreon-scraper [-s <sessionId>] [-o <outputDir>]\n\n" +
     "-s --sessionId\t\tSupply Patreon session ID cookie\n" +
     "-o --outputDir\t\tChoose download directory location\n");
 }
