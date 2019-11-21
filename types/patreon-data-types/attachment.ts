@@ -1,11 +1,15 @@
-import { DataTypeKey, ICommonAttributes, ICommonDataProperties } from "../response";
+import {
+  DataTypeKey,
+  CommonAttributes,
+  CommonDataProperties
+} from "../response"
 
-export interface IAttachment extends ICommonDataProperties {
-  attributes: IAttachmentAttributes;
-  type: DataTypeKey.Attachment;
+export interface IAttachment extends CommonDataProperties {
+  attributes: IAttachmentAttributes
+  type: DataTypeKey.Attachment
 }
 
-interface IAttachmentAttributes extends ICommonAttributes {
-  name: string;
-  url: string;
+interface IAttachmentAttributes extends CommonAttributes {
+  name: string
+  url: string
 }

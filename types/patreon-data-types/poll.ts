@@ -1,27 +1,31 @@
 import {
-  DataTypeKey, ICommonAttributes, ICommonDataProperties,
-  ICommonRelationships, IDataIdentifier, IGenericRelationshipAttributes,
-} from "../response";
+  DataTypeKey,
+  CommonAttributes,
+  CommonDataProperties,
+  CommonRelationships,
+  DataIdentifier,
+  GenericRelationshipAttributes
+} from "../response"
 
-export interface IPoll extends ICommonDataProperties {
-  attributes: IPollAttributes;
-  relationships: IPollRelationships;
-  type: DataTypeKey.Poll;
+export interface Poll extends CommonDataProperties {
+  attributes: PollAttributes
+  relationships: PollRelationships
+  type: DataTypeKey.Poll
 }
 
-interface IPollAttributes extends ICommonAttributes {
-  closes_at: Date | null;
-  created_at: Date;
-  num_responses: number;
-  question_text: string;
-  question_type: IPollQuestionTypeKey;
+interface PollAttributes extends CommonAttributes {
+  closes_at: Date | null
+  created_at: Date
+  num_responses: number
+  question_text: string
+  question_type: IPollQuestionTypeKey
 }
 
 enum IPollQuestionTypeKey {
-  MultipleChoice = "multiple_choice",
+  MultipleChoice = "multiple_choice"
 }
 
-interface IPollRelationships extends ICommonRelationships {
-  choices?: IGenericRelationshipAttributes<IDataIdentifier[], void>;
-  current_user_responses?: IGenericRelationshipAttributes<any[], void>;
+interface PollRelationships extends CommonRelationships {
+  choices?: GenericRelationshipAttributes<DataIdentifier[], void>
+  current_user_responses?: GenericRelationshipAttributes<any[], void>
 }

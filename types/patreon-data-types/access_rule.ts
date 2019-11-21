@@ -1,24 +1,27 @@
 import {
-  DataTypeKey, ICommonAttributes, ICommonDataProperties,
-  ICommonRelationships, IGenericRelationshipAttributes,
-} from "../response";
+  DataTypeKey,
+  CommonAttributes,
+  CommonDataProperties,
+  CommonRelationships,
+  GenericRelationshipAttributes
+} from "../response"
 
-export interface IAccessRule extends ICommonDataProperties {
-  attributes: IAccessRuleAttributes;
-  relationships: IAccessRuleRelationships;
-  type: DataTypeKey.AccessRule;
+export interface IAccessRule extends CommonDataProperties {
+  attributes: IAccessRuleAttributes
+  relationships: IAccessRuleRelationships
+  type: DataTypeKey.AccessRule
 }
 
-interface IAccessRuleAttributes extends ICommonAttributes {
-  access_rule_type: AccessRuleTypeKey;
-  amount_cents: number | null;
-  post_count: number;
+interface IAccessRuleAttributes extends CommonAttributes {
+  access_rule_type: AccessRuleTypeKey
+  amount_cents: number | null
+  post_count: number
 }
 
 enum AccessRuleTypeKey {
-  Patrons = "patrons",
+  Patrons = "patrons"
 }
 
-interface IAccessRuleRelationships extends ICommonRelationships {
-  tier?: IGenericRelationshipAttributes<any | null, void>;
+interface IAccessRuleRelationships extends CommonRelationships {
+  tier?: GenericRelationshipAttributes<any | null, void>
 }

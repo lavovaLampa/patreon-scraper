@@ -1,53 +1,66 @@
-import { FullResponse } from "request-promise-native";
-import { IAccessRule } from "./patreon-data-types/access_rule";
-import { IAttachment } from "./patreon-data-types/attachment";
-import { ICampaign } from "./patreon-data-types/campaign";
-import { IPoll } from "./patreon-data-types/poll";
-import { IPollChoice } from "./patreon-data-types/poll_choice";
-import { IPost } from "./patreon-data-types/post";
-import { IPostTag } from "./patreon-data-types/post_tag";
-import { IUser } from "./patreon-data-types/user";
+import { FullResponse } from "request-promise-native"
+import { IAccessRule } from "./patreon-data-types/access_rule"
+import { IAttachment } from "./patreon-data-types/attachment"
+import { ICampaign } from "./patreon-data-types/campaign"
+import { Poll } from "./patreon-data-types/poll"
+import { IPollChoice } from "./patreon-data-types/poll_choice"
+import { IPost } from "./patreon-data-types/post"
+import { IPostTag } from "./patreon-data-types/post_tag"
+import { IUser } from "./patreon-data-types/user"
 
-export interface ITypedResponse<T> extends FullResponse {
-  body: T;
+export interface TypedResponse<T> extends FullResponse {
+  body: T
 }
 
-export interface IGenericResponse<T, U> {
-  data: T;
-  included: TDataObject[];
-  links: ICommonLinks;
-  meta: U;
+export interface GenericResponse<T, U> {
+  data: T
+  included: TDataObject[]
+  links: CommonLinks
+  meta: U
 }
 
-export interface ICommonDataProperties {
-  id: string;
+export interface CommonDataProperties {
+  id: string
 }
 
-export type TDataObject = IUser | IPost | IPollChoice | IPostTag | IAccessRule | IAttachment | ICampaign | IPoll;
+export type TDataObject =
+  | IUser
+  | IPost
+  | IPollChoice
+  | IPostTag
+  | IAccessRule
+  | IAttachment
+  | ICampaign
+  | Poll
+
+export interface CommonAttributes {}
 
 // tslint:disable-next-line: no-empty-interface
-export interface ICommonAttributes { }
+export interface CommonRelationships {}
 
-// tslint:disable-next-line: no-empty-interface
-export interface ICommonRelationships { }
+export type ICommonRelationshipAttributes = GenericRelationshipAttributes<
+  DataIdentifier,
+  CommonLinks
+>
 
-export type ICommonRelationshipAttributes = IGenericRelationshipAttributes<IDataIdentifier, ICommonLinks>;
-
-export interface IGenericRelationshipAttributes<T, U extends ICommonLinks | void> {
-  data: T;
-  links?: U;
+export interface GenericRelationshipAttributes<
+  T,
+  U extends CommonLinks | void
+> {
+  data: T
+  links?: U
 }
 
-export interface ICommonLinks {
-  first?: string;
-  next?: string;
-  related?: string;
-  self?: string;
+export interface CommonLinks {
+  first?: string
+  next?: string
+  related?: string
+  self?: string
 }
 
-export interface IDataIdentifier {
-  id: string;
-  type: DataTypeKey;
+export interface DataIdentifier {
+  id: string
+  type: DataTypeKey
 }
 
 export enum DataTypeKey {
@@ -60,5 +73,5 @@ export enum DataTypeKey {
   User = "user",
   Poll = "poll",
   PollChoice = "poll_choice",
-  Pledge = "pledge",
+  Pledge = "pledge"
 }

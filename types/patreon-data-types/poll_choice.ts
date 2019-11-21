@@ -1,17 +1,21 @@
-import { DataTypeKey, ICommonAttributes, ICommonDataProperties } from "../response";
+import {
+  DataTypeKey,
+  CommonAttributes,
+  CommonDataProperties
+} from "../response"
 
-export interface IPollChoice extends ICommonDataProperties {
-  attributes: IPollChoiceAttributes;
-  type: DataTypeKey.PollChoice;
+export interface IPollChoice extends CommonDataProperties {
+  attributes: IPollChoiceAttributes
+  type: DataTypeKey.PollChoice
 }
 
-interface IPollChoiceAttributes extends ICommonAttributes {
-  choice_type: ChoiceTypeTypeKey;
-  num_responses: number;
-  position: number;
-  text_content: string;
+interface IPollChoiceAttributes extends CommonAttributes {
+  choice_type: ChoiceTypeTypeKey
+  num_responses: number
+  position: number
+  text_content: string
 }
 
 enum ChoiceTypeTypeKey {
-  Toggle = "toggle",
+  Toggle = "toggle"
 }

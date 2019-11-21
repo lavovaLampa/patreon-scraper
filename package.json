@@ -7,25 +7,31 @@
   "scripts": {
     "app": "ts-node src/index.ts",
     "tsc-check": "tsc --noEmit",
-    "lint": "tslint --project ./tsconfig.json 'src/**/*.{ts,tsx}'"
+    "lint": "eslint 'src/**' 'types/**'",
+    "lint-fix": "eslint --fix 'src/**' 'types/**'"
   },
   "dependencies": {
     "@types/content-disposition": "^0.5.2",
-    "@types/node": "^12.6.2",
-    "@types/qs": "^6.5.3",
-    "@types/request": "^2.48.1",
-    "@types/request-promise-native": "^1.0.16",
+    "@types/node": "^12.12.11",
+    "@types/qs": "^6.9.0",
+    "@types/request": "^2.48.3",
+    "@types/request-promise-native": "^1.0.17",
     "content-disposition": "^0.5.3",
-    "fp-ts": "^2.0.1",
+    "fp-ts": "^2.1.2",
     "moment": "^2.24.0",
     "request": "^2.88.0",
-    "request-promise-native": "^1.0.7",
-    "ts-node": "^8.3.0",
-    "typescript": "^3.5.3"
+    "request-promise-native": "^1.0.8",
+    "cloudscraper": "^4.3.0",
+    "ts-node": "^8.5.0",
+    "typescript": "^3.7.2"
   },
   "devDependencies": {
-    "tslint": "^5.18.0",
-    "tslint-sonarts": "^1.9.0"
+    "@typescript-eslint/parser": "^2.8.0",
+    "@typescript-eslint/eslint-plugin": "^2.8.0",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint": "^6.6.0",
+    "prettier": "^1.19.1"
   },
   "author": "lavaLamp",
   "license": "MIT"
