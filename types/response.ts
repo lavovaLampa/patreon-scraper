@@ -1,4 +1,4 @@
-import { FullResponse } from "request-promise-native"
+import { Response } from "cloudscraper"
 import { IAccessRule } from "./patreon-data-types/access_rule"
 import { IAttachment } from "./patreon-data-types/attachment"
 import { ICampaign } from "./patreon-data-types/campaign"
@@ -8,7 +8,7 @@ import { IPost } from "./patreon-data-types/post"
 import { IPostTag } from "./patreon-data-types/post_tag"
 import { IUser } from "./patreon-data-types/user"
 
-export interface TypedResponse<T> extends FullResponse {
+export interface TypedResponse<T> extends Response {
   body: T
 }
 

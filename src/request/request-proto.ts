@@ -1,48 +1,52 @@
 import { IStringifyOptions } from "qs"
 import { RequestPromiseOptions } from "request-promise-native"
+import { RequestPromise } from "request-promise"
+import { Response, OptionsWithUrl } from "cloudscraper"
+import * as cloudscraper from "cloudscraper"
 
 const BASE_URL = "https://patreon.com"
 const STRINGIFY_OPTIONS: IStringifyOptions = {
   arrayFormat: "comma",
   encode: false
 }
-const DEFAULT_REQUEST_OPTIONS: RequestPromiseOptions = {
-  baseUrl: BASE_URL,
-  headers: {
-    Referer: `${BASE_URL}/home`
-  },
-  host: "www.patreon.com",
-  json: true,
-  qsStringifyOptions: STRINGIFY_OPTIONS,
-  resolveWithFullResponse: true
-}
 
 export abstract class BasicAuthenticatedPatreonRequest {
   protected readonly sessionId: string
-  private readonly requestBase: RequestPromiseOptions
+  protected readonly requestBase: RequestPromiseOptions
 
   constructor(sessionId: string) {
     this.sessionId = sessionId
     this.requestBase = {
-      ...DEFAULT_REQUEST_OPTIONS,
-      headers: {
-        ...DEFAULT_REQUEST_OPTIONS.headers,
-        Cookie: `session_id=${this.sessionId}`
-      }
+      baseUrl: BASE_URL,
+      resolveWithFullResponse: true,
+      qsStringifyOptions: STRINGIFY_OPTIONS,
+      json: true
     }
   }
 
-  protected get getRequestOptions(): RequestPromiseOptions {
-    return {
-      ...this.requestBase,
-      method: "GET"
-    }
+  protected getRequest(url: string, options?: any): RequestPromise<Response> {
+    return this.cloudscraperRequest("GET", url, options)
   }
 
-  protected get postRequestOptions(): RequestPromiseOptions {
-    return {
-      ...this.requestBase,
-      method: "POST"
+  protected postRequest(url: string, options?: any): RequestPromise<Response> {
+    return this.cloudscraperRequest("POST", url, options)
+  }
+
+  private cloudscraperRequest(
+    method: "GET" | "POST",
+    url: string,
+    options?: any
+  ): RequestPromise<Response> {
+    cloudscraper.defaultParams.headers = {
+      ...cloudscraper.defaultParams.headers,
+      Cookie: `session_id=${this.sessionId}`
     }
+    const requestOptions: OptionsWithUrl = {
+      ...this.requestBase,
+      method,
+      url,
+      qs: options
+    }
+    return cloudscraper(requestOptions)
   }
 }
