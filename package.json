@@ -3,9 +3,9 @@
   "version": "0.0.2",
   "description": "WIP Patreon downloader",
   "repository": "https://github.com/lavovaLampa/patreon-scraper",
-  "main": "src/index.ts",
+  "main": "index.ts",
   "scripts": {
-    "app": "ts-node src/index.ts",
+    "app": "ts-node index.ts",
     "tsc-check": "tsc --noEmit",
     "lint": "eslint 'src/**' 'types/**'",
     "lint-fix": "eslint --fix 'src/**' 'types/**'"
