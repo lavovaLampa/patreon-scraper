@@ -1,10 +1,8 @@
-#! /usr/bin/env -S node -r ts-node/register
-
-import { AttachmentDownloader } from "./src/async-downloader"
-import { AttachmentScraper } from "./src/patreon-stream"
-import { PatreonRequest } from "./src/request/patreon-endpoint"
-import { CmdOptionsParser } from "./src/utils/parsing"
-import { ParseResult } from "./types/utils/parsing"
+import { AttachmentDownloader } from "./async-downloader"
+import { AttachmentScraper } from "./patreon-stream"
+import { PatreonRequest } from "./request/patreon-endpoint"
+import { CmdOptionsParser } from "./utils/parsing"
+import { ParseResult } from "../type/utils/parsing"
 
 async function testAuth(tmpSessionId: string): Promise<boolean> {
   const patreonRequest = new PatreonRequest(tmpSessionId)

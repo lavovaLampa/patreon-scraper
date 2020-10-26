@@ -1,52 +1,57 @@
-import { IStringifyOptions } from "qs"
-import { RequestPromiseOptions } from "request-promise-native"
-import { RequestPromise } from "request-promise"
-import { Response, OptionsWithUrl } from "cloudscraper"
-import * as cloudscraper from "cloudscraper"
+import hooman from "hooman"
+// import got from "got"
+import { CancelableRequest, Response } from "got"
+import Request from "got/dist/source/core"
+import { CookieJar } from "tough-cookie"
+import { URLSearchParams } from "url"
+import { Maybe } from "../../type/common"
 
 const BASE_URL = "https://patreon.com"
-const STRINGIFY_OPTIONS: IStringifyOptions = {
-  arrayFormat: "comma",
-  encode: false
-}
 
 export abstract class BasicAuthenticatedPatreonRequest {
   protected readonly sessionId: string
-  protected readonly requestBase: RequestPromiseOptions
+  protected readonly requestBase: {
+    prefixUrl: string
+    cookieJar: CookieJar
+  }
+  protected cookieJar: CookieJar
 
   constructor(sessionId: string) {
+    this.cookieJar = new CookieJar()
+    this.cookieJar.setCookieSync(`session_id=${sessionId}`, BASE_URL)
+
     this.sessionId = sessionId
     this.requestBase = {
-      baseUrl: BASE_URL,
-      resolveWithFullResponse: true,
-      qsStringifyOptions: STRINGIFY_OPTIONS,
-      json: true
+      prefixUrl: BASE_URL,
+      cookieJar: this.cookieJar
     }
   }
 
-  protected getRequest(url: string, options?: any): RequestPromise<Response> {
-    return this.cloudscraperRequest("GET", url, options)
-  }
-
-  protected postRequest(url: string, options?: any): RequestPromise<Response> {
-    return this.cloudscraperRequest("POST", url, options)
-  }
-
-  private cloudscraperRequest(
-    method: "GET" | "POST",
+  protected getJsonRequest<T>(
     url: string,
-    options?: any
-  ): RequestPromise<Response> {
-    cloudscraper.defaultParams.headers = {
-      ...cloudscraper.defaultParams.headers,
-      Cookie: `session_id=${this.sessionId}`
-    }
-    const requestOptions: OptionsWithUrl = {
+    searchParams?: Maybe<URLSearchParams>
+  ): CancelableRequest<Response<T>> {
+    /// @ts-ignore
+    return hooman<T>(url, {
       ...this.requestBase,
-      method,
-      url,
-      qs: options
-    }
-    return cloudscraper(requestOptions)
+      method: "GET",
+      responseType: "json",
+      searchParams: searchParams ?? undefined
+    })
+  }
+
+  protected getStreamRequest(url: string): Request {
+    return hooman(url, {
+      isStream: true,
+      method: "GET"
+    })
+  }
+
+  protected postRequest<T>(url: string): CancelableRequest<Response<T>> {
+    /// @ts-ignore
+    return hooman<T>(url, {
+      ...this.requestBase,
+      method: "POST"
+    })
   }
 }

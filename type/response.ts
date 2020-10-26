@@ -1,16 +1,12 @@
-import { Response } from "cloudscraper"
 import { IAccessRule } from "./patreon-data-types/access_rule"
-import { IAttachment } from "./patreon-data-types/attachment"
+import { Attachment } from "./patreon-data-types/attachment"
 import { ICampaign } from "./patreon-data-types/campaign"
+import { Media } from "./patreon-data-types/media"
 import { Poll } from "./patreon-data-types/poll"
 import { IPollChoice } from "./patreon-data-types/poll_choice"
 import { IPost } from "./patreon-data-types/post"
 import { IPostTag } from "./patreon-data-types/post_tag"
 import { IUser } from "./patreon-data-types/user"
-
-export interface TypedResponse<T> extends Response {
-  body: T
-}
 
 export interface GenericResponse<T, U> {
   data: T
@@ -29,9 +25,10 @@ export type TDataObject =
   | IPollChoice
   | IPostTag
   | IAccessRule
-  | IAttachment
+  | Attachment
   | ICampaign
   | Poll
+  | Media
 
 export interface CommonAttributes {}
 
@@ -73,5 +70,6 @@ export enum DataTypeKey {
   User = "user",
   Poll = "poll",
   PollChoice = "poll_choice",
-  Pledge = "pledge"
+  Pledge = "pledge",
+  Media = "media"
 }

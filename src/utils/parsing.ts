@@ -1,5 +1,5 @@
-import { OptionDefinition, ParseResult } from "../../types/utils/parsing"
-import { Maybe } from "../../types/common"
+import { OptionDefinition, ParseResult } from "../../type/utils/parsing"
+import { Maybe } from "../../type/common"
 
 const defaultValues: ParseResult = {
   outputDir: "./attachment_out",

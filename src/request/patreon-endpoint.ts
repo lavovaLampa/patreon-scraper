@@ -1,15 +1,9 @@
-import { FileUrlQS } from "../../types/common"
-// import { TPostsResponse } from "../../types/response/posts"
-// import { TStreamResponse } from "../../types/response/stream"
-import { IStreamRequestOptions } from "../../types/request"
-import { TypedResponse } from "../../types/response"
 import { BasicAuthenticatedPatreonRequest } from "./request-proto"
-import { RequestPromise } from "request-promise"
-import * as requestPromise from "request-promise"
-import * as cloudscraper from "cloudscraper"
-import { OptionsWithUrl } from "cloudscraper"
-import { TCurrentUserResponse } from "../../types/response/current_user"
-import { TStreamResponse } from "../../types/response/stream"
+import { Maybe } from "../../type/common"
+import { URLSearchParams } from "url"
+import { TStreamResponse } from "../../type/response/stream"
+import { TCurrentUserResponse } from "../../type/response/current_user"
+import { Response } from "got/dist/source"
 
 export class PatreonRequest extends BasicAuthenticatedPatreonRequest {
   // public async getCampaign(
@@ -35,19 +29,62 @@ export class PatreonRequest extends BasicAuthenticatedPatreonRequest {
   //   return this.getRequestProto("api/current_user", options)
   // }
 
-  public getCurrentUser(): RequestPromise<TypedResponse<TCurrentUserResponse>> {
-    return this.getRequest("api/current_user")
+  public async getCurrentUser(): Promise<
+    Maybe<Response<TCurrentUserResponse>>
+  > {
+    try {
+      const result = await this.getJsonRequest<TCurrentUserResponse>(
+        "api/current_user"
+      )
+      return result
+    } catch (err) {
+      console.error(err)
+      return null
+    }
   }
 
-  public getFile(identifier: FileUrlQS): RequestPromise<TypedResponse<any>> {
-    const requestOptions: OptionsWithUrl = {
-      ...this.requestBase,
-      json: false,
-      qs: identifier,
-      url: "/file"
+  public async getPosts(): Promise<Maybe<Response<string>>> {
+    try {
+      const result = await this.getJsonRequest<string>("api/posts")
+      return result
+    } catch (err) {
+      console.error(err)
+      return null
     }
-    return cloudscraper(requestOptions)
   }
+
+  public async getStream(
+    cursor: Maybe<string>
+  ): Promise<Maybe<Response<TStreamResponse>>> {
+    const searchParams = cursor
+      ? new URLSearchParams([["page[cursor]", cursor]])
+      : null
+
+    try {
+      const result = await this.getJsonRequest<TStreamResponse>(
+        "api/stream",
+        searchParams
+      )
+      return result
+    } catch (err) {
+      console.error(err)
+      return null
+    }
+  }
+
+  public getFile(url: string) {
+    return this.getStreamRequest(url)
+  }
+
+  // public getFile(identifier: FileUrlQS) {
+  //   const requestOptions: OptionsWithUrl = {
+  //     ...this.requestBase,
+  //     json: false,
+  //     qs: identifier,
+  //     url: "/file"
+  //   }
+  //   return cloudscraper(requestOptions)
+  // }
 
   // TODO: response type
   // public async getPosts(options?: any): Promise<TypedResponse<TPostsResponse>> {
@@ -74,12 +111,6 @@ export class PatreonRequest extends BasicAuthenticatedPatreonRequest {
   // ): Promise<TypedResponse<TStreamResponse>> {
   //   return this.getRequestProto("api/stream", options)
   // }
-
-  public getStream(
-    options?: IStreamRequestOptions
-  ): requestPromise.RequestPromise<TypedResponse<TStreamResponse>> {
-    return this.getRequest("api/stream", options)
-  }
 
   // public async getUserInfo(
   //   userId: string,

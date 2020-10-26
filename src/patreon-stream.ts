@@ -1,15 +1,10 @@
-import * as moment from "moment"
-import * as qs from "qs"
-import { AttachmentIdentifier, FileUrlQS, Maybe } from "../types/common"
-import { IAttachment } from "../types/patreon-data-types/attachment"
-import {
-  ApiPostTypeKey,
-  IFileAttributes
-} from "../types/patreon-data-types/post"
-import { TStreamResponse } from "../types/response/stream"
-import { IStreamRequestOptions } from "../types/request"
-import { DataTypeKey } from "../types/response"
+import moment from "moment"
+import { DownloadIdentifier, Maybe } from "../type/common"
+import { Attachment } from "../type/patreon-data-types/attachment"
+import { TStreamResponse } from "../type/response/stream"
+import { DataTypeKey } from "../type/response"
 import { PatreonRequest } from "./request/patreon-endpoint"
+import { Media } from "../type/patreon-data-types/media"
 
 const PAGE_POST_COUNT = 12
 
@@ -22,33 +17,60 @@ export class AttachmentScraper {
     this.request = request
   }
 
-  public getCurrAttachments(): AttachmentIdentifier[] {
+  public getCurrAttachments(): DownloadIdentifier[] {
+    let files: DownloadIdentifier[] = []
+
     if (this.currPage?.included) {
       const attachments = this.currPage.included.filter(
         obj => obj.type === DataTypeKey.Attachment
-      ) as IAttachment[]
-      return this.dataToAttachment(attachments)
-    } else {
-      return []
+      ) as Attachment[]
+
+      files = attachments.map(obj => {
+        return {
+          fileName: obj.attributes.name,
+          url: obj.attributes.url
+        }
+      })
     }
+
+    return files
   }
 
-  public getCurrPostFiles(): IFileAttributes[] {
-    if (this.currPage?.data) {
-      const validImagePosts = this.currPage.data.filter(
-        post =>
-          post?.attributes?.post_type === ApiPostTypeKey.ImageFile &&
-          post?.attributes?.post_file
-      )
+  public getCurrMedia(): DownloadIdentifier[] {
+    let files: DownloadIdentifier[] = []
 
-      const postsWithoutAttachment = validImagePosts.filter(
-        post => !((post?.relationships?.attachments?.length ?? -1) > 0)
-      )
-      return postsWithoutAttachment.map(post => post.attributes.post_file)
-    } else {
-      return []
+    if (this.currPage?.included) {
+      const media = this.currPage.included.filter(
+        obj => obj.type === DataTypeKey.Media
+      ) as Media[]
+
+      files = media.map(obj => {
+        return {
+          url: obj.attributes.download_url,
+          fileName: obj.attributes.file_name
+        }
+      })
     }
+
+    return files
   }
+
+  // public getCurrPostFiles(): IFileAttributes[] {
+  //   if (this.currPage?.data) {
+  //     const validImagePosts = this.currPage.data.filter(
+  //       post =>
+  //         post?.attributes?.post_type === ApiPostTypeKey.ImageFile &&
+  //         post?.attributes?.post_file
+  //     )
+
+  //     const postsWithoutAttachment = validImagePosts.filter(
+  //       post => !((post?.relationships?.attachments?.length ?? -1) > 0)
+  //     )
+  //     return postsWithoutAttachment.map(post => post.attributes.post_file)
+  //   } else {
+  //     return []
+  //   }
+  // }
 
   public isLastPage(): boolean {
     const postCount = this.getPostsCount()
@@ -56,25 +78,20 @@ export class AttachmentScraper {
   }
 
   public async nextPage(): Promise<boolean> {
-    const streamOptions: IStreamRequestOptions = {
-      page: { cursor: this.nextCursor }
-    }
+    const result = await this.request.getStream(this.nextCursor)
 
-    try {
-      const { statusCode, body } = await this.request.getStream(streamOptions)
-      if (statusCode === 200 && body) {
+    if (result) {
+      const { statusCode, body } = result
+      if (statusCode == 200 && body) {
         this.currPage = body
-        this.nextCursor = this.isLastPage()
-          ? this.nextCursor
-          : this.nextCursorLocation()
+        this.advanceCursor()
         return true
       } else {
         console.warn("received status code: " + statusCode)
         console.warn("page state not updated")
       }
-    } catch (e) {
+    } else {
       console.error("failed to execute request")
-      console.error(e)
     }
 
     return false
@@ -85,24 +102,30 @@ export class AttachmentScraper {
     this.nextCursor = null
   }
 
-  private dataToAttachment(data: IAttachment[]): AttachmentIdentifier[] {
-    const sparseArray = data.map(val => {
-      const urlSplit = val.attributes.url.split("?")
-      if (urlSplit.length > 1) {
-        const qsPart = urlSplit[1]
-        const result: FileUrlQS | null | undefined = qs.parse(qsPart)
-        if (result) {
-          return {
-            name: val.attributes.name,
-            ...result
-          }
-        }
-      }
-      console.error("file queryString parsing fail")
-      return null
-    })
-    return sparseArray.filter(val => val !== null) as AttachmentIdentifier[]
+  private advanceCursor(): void {
+    if (!this.isLastPage()) {
+      this.nextCursor = this.nextCursorLocation()
+    }
   }
+
+  // private dataToAttachment(data: Attachment[]): AttachmentIdentifier[] {
+  //   const sparseArray = data.map(val => {
+  //     const urlSplit = val.attributes.url.split("?")
+  //     if (urlSplit.length > 1) {
+  //       const qsPart = urlSplit[1]
+  //       const result: FileUrlQS | null | undefined = qs.parse(qsPart)
+  //       if (result) {
+  //         return {
+  //           name: val.attributes.name,
+  //           ...result
+  //         }
+  //       }
+  //     }
+  //     console.error("file queryString parsing fail")
+  //     return null
+  //   })
+  //   return sparseArray.filter(val => val !== null) as AttachmentIdentifier[]
+  // }
 
   private getPostsCount(): number {
     if (this.currPage?.meta?.posts_count) {
