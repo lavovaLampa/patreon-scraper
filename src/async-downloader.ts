@@ -1,7 +1,6 @@
-import * as cd from "content-disposition"
 import * as fs from "fs"
 import { PatreonRequest } from "./request/patreon-endpoint"
-import { DownloaderOptions, RequestHandler } from "../type/async-downloader"
+import { DownloaderOptions } from "../type/async-downloader"
 import { DownloadIdentifier } from "../type/common"
 import { Stream } from "stream"
 import Request from "got/dist/source/core"
@@ -41,21 +40,6 @@ export class AttachmentDownloader {
     return request
   }
 
-  // private getFileByIds({ h, i }: AttachmentIdentifier): Request {
-  //   const request = this.request.getFile({ h, i })
-  //   const fileName = "parseError"
-
-  //   request.on("response", response =>
-  //     this.fileRequestResponseHandler({
-  //       fileName,
-  //       outputDirectory: this.outputDirectory,
-  //       request,
-  //       response
-  //     })
-  //   )
-  //   return request
-  // }
-
   private checkDownloadedFiles(): void {
     if (fs.existsSync(this.outputDirectory)) {
       try {
@@ -87,67 +71,31 @@ export class AttachmentDownloader {
         console.log(currAttachment.fileName + "...")
         const fileRequest = this.getDownloadStream(currAttachment)
 
-        // Stream.pipeline(
-        //   fileRequest,
-        //   fs.createWriteStream(
-        //     `${this.outputDirectory}/${currAttachment.fileName}`
-        //   ),
-        //   (err) => {
-        //     console.log(err?.message)
-        //   }
-        // )
-
         try {
-          /// @ts-ignore
           await pipeline(
             fileRequest,
             fs.createWriteStream(
               `${this.outputDirectory}/${currAttachment.fileName}`
-            ),
-            /// @ts-ignore
-            err => {
-              console.log(err?.message)
-            }
+            )
           )
         } catch (err) {
-          console.log(err)
+          console.error("Failed to download file")
+          console.error(`Type: ${err.name}`)
+          console.error(`Reason: "${err.message}"`)
         }
-        // console.error(
-        //   "There was problem downloading file: " + currAttachment.fileName
-        // )
-        // console.error(err)
-
-        // fileRequest.on("complete", () => {
-        //   console.log("DONE")
-        //   setTimeout(() => this.enqueueNext(), 1000 * Math.random())
-        // })
-
-        // fileRequest.on("error", err => {
-        //   console.log("file download error: " + err)
-        // })
       } else {
         console.log(
           currAttachment.fileName + " already downloaded, skipping..."
         )
-        return this.enqueueNext()
       }
+
+      // Always queue next attachment to be downloaded regardless of last download result
+      this.enqueueNext()
     } else {
       this.working = false
       return
     }
   }
-
-  // private fileRequestResponseHandler(this: void, params: RequestHandler): void {
-  //   if (params.response.headers["content-disposition"]) {
-  //     const parsedCd = cd.parse(params.response.headers["content-disposition"])
-  //     if (parsedCd && parsedCd.parameters && parsedCd.parameters.filename) {
-  //       params.fileName = parsedCd.parameters.filename
-  //     }
-  //   }
-  //   params.request.pipe(
-  //     fs.createWriteStream(`${params.outputDirectory}/${params.fileName}`)
-  //   )
-  // }
 
   private runQueue(): void {
     if (!this.working) {

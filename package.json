@@ -19,11 +19,11 @@
     "tough-cookie": "^4.0.0"
   },
   "devDependencies": {
+    "@tsconfig/node12": "^1.0.7",
     "@types/content-disposition": "^0.5.3",
-    "@types/node": "^12.12.69",
+    "@types/node": "^12.19.1",
     "@types/qs": "^6.9.5",
     "@types/tough-cookie": "2.3.2",
-    "@tsconfig/node12": "^1.0.7",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
     "eslint": "^6.8.0",
