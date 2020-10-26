@@ -26,8 +26,8 @@ function printHelp(): void {
     "patreon-scraper 0.0.1\n\n" +
       "Usage:\n" +
       "\tpatreon-scraper [-s <sessionId>] [-o <outputDir>]\n\n" +
-      "-s --sessionId\t\tSupply Patreon session ID cookie\n" +
-      "-o --outputDir\t\tChoose download directory location\n"
+      "-s --sessionId\t\tPatreon sessionID cookie. Can be obtained after logging in on patreon.com; using developer tools (storage → cookies).\n" +
+      "-o --outputDir\t\tDownload directory.\n"
   )
 }
 
