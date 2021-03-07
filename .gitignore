@@ -4,3 +4,4 @@ out
 .sonarlint
 .env
 attachment_out
+build/

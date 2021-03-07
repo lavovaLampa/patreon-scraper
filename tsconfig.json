@@ -17,8 +17,8 @@
     "strictPropertyInitialization": true,
     "strictNullChecks": true,
     "strict": true,
-    "outDir": "/js",
-    "noEmit": true,
+    "outDir": "build/",
+    "noEmit": false,
     "checkJs": true,
     "allowJs": true
   },
