@@ -2,20 +2,21 @@
 Patreon-scraper is a Patreon attachment scraper/downloader written in TypeScript.
 
 # Description
-A work-in-progress Patreon attachment downloader. Currently tries to download all attachments to specified folder (otherwise defaults to "./attachments_out"), skipping files that exist (checks filename).
+A work-in-progress Patreon attachment downloader. Currently tries to download all attachments to specified folder (otherwise defaults to "./downloaded_media"), skipping files that exist (checks filename).
 
 # Requirements
 - NodeJS (anything 10+ should work)
 - npm
 
 # Installation
+- Use prepackaged versions
+or
 - Clone repo
 - `npm install`
+- `npm run build`
 
 # Running
-- `./index.ts --help`
-- If you are on an LTS distribution, there's a chance you don't have an updated version of `env` executable. If that's the case, you can run the script using:
-- `node -r ts-node/register index.ts`
+- `./<executable> --help
 
 # TODO
 - [x] Choose Your Own Download Folder™
