@@ -1,7 +1,6 @@
 .vscode
 node_modules/
-out
-.sonarlint
 .env
 build/
 downloaded_media/
+exe/
