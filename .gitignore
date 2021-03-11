@@ -3,5 +3,5 @@ node_modules/
 out
 .sonarlint
 .env
-attachment_out
 build/
+downloaded_media/

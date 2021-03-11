@@ -1,8 +1,7 @@
-import { IPost } from "../patreon-data-types/post"
-import { GenericResponse } from "../response"
+import { ApiResponse } from "../response";
 
-export type TStreamResponse = GenericResponse<IPost[], IStreamResponseMeta>
+export type StreamResponse = ApiResponse<StreamMeta>;
 
-interface IStreamResponseMeta {
-  posts_count: number
+interface StreamMeta {
+  posts_count: number;
 }
