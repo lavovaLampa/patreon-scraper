@@ -45,7 +45,7 @@ export class StreamApi {
   public getAttachments(): PatreonFileHandle[] {
     let attachments: PatreonFileHandle[] = [];
 
-    if (this.currPage) {
+    if (this.currPage?.included) {
       const filteredIncludes = this.currPage.included.filter(
         (x) => x.type === DataTypeKey.Attachment
       ) as Attachment[];
@@ -58,7 +58,7 @@ export class StreamApi {
   public getMedia(): PatreonFileHandle[] {
     let media: PatreonFileHandle[] = [];
 
-    if (this.currPage) {
+    if (this.currPage?.included) {
       const filteredIncludes = this.currPage.included.filter(
         (x) => x.type === DataTypeKey.Media
       ) as Media[];

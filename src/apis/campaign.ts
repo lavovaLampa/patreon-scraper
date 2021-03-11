@@ -48,7 +48,7 @@ export class CampaignApi {
   public getAttachments(): PatreonFileHandle[] {
     let attachments: PatreonFileHandle[] = [];
 
-    if (this.currPage) {
+    if (this.currPage?.included) {
       const includedAttachments = this.currPage.included.filter(
         (x) => x.type === DataTypeKey.Attachment
       ) as Attachment[];
@@ -61,7 +61,7 @@ export class CampaignApi {
   public getMedia(): PatreonFileHandle[] {
     let media: PatreonFileHandle[] = [];
 
-    if (this.currPage) {
+    if (this.currPage?.included) {
       const includedMedia = this.currPage.included.filter(
         (x) => x.type === DataTypeKey.Media
       ) as Media[];

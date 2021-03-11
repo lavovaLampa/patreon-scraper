@@ -11,6 +11,8 @@ export interface ParsedArgs {
   session_id?: string;
   d?: string;
   output_dir?: string;
+  h?: boolean;
+  help?: boolean;
   _: string[];
 }
 
@@ -18,4 +20,5 @@ export interface InternalArgs {
   sessionId: Optional<string>;
   outputDir: string;
   campaignIds: readonly number[];
+  help: boolean;
 }
