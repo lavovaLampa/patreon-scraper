@@ -1,26 +1,12 @@
 {
+  "extends": "@tsconfig/node12/tsconfig.json",
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "inlineSourceMap": true,
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
-    "alwaysStrict": true,
-    "noImplicitReturns": true,
-    "noStrictGenericChecks": false,
-    "noUnusedParameters": true,
-    "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "strictBindCallApply": true,
-    "strictFunctionTypes": true,
-    "strictPropertyInitialization": true,
-    "strictNullChecks": true,
     "strict": true,
+    "noImplicitAny": true,
+    "removeComments": true,
+    "sourceMap": true,
     "outDir": "build/",
-    "noEmit": false,
-    "checkJs": true,
-    "allowJs": true
+    "esModuleInterop": true
   },
-  "include": ["src/**/*", "types/**/*", "index.ts"]
+  "include": ["src/**/*.ts", "type/**/*.ts"],
 }

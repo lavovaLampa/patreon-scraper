@@ -7,7 +7,6 @@
   "extends": [
     "plugin:@typescript-eslint/recommended",
     "prettier",
-    "prettier/@typescript-eslint",
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking"
@@ -25,7 +24,7 @@
     "indent": ["error", 2],
     "linebreak-style": ["error", "unix"],
     "quotes": ["error", "double"],
-    "semi": ["error", "never"],
-    "prettier/prettier": "error"
+    "prettier/prettier": 1,
+    "no-empty": "warn"
   }
 }
