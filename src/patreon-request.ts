@@ -1,5 +1,5 @@
-import { Response } from "got/dist/source/core";
-import { Cookie, CookieJar } from "tough-cookie";
+import Request, { Response } from "got/dist/source/core";
+import { CookieJar } from "tough-cookie";
 import got, { Got } from "got";
 import { URLSearchParams } from "url";
 import { CampaignResponse } from "../type/response/campaign";
@@ -76,7 +76,7 @@ export class PatreonRequest {
     });
   }
 
-  public getUrlStream(url: string) {
+  public getUrlStream(url: string): Request {
     // To override the baseUrl set in the constructor
     const urlObject = new URL(url);
 

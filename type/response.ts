@@ -16,14 +16,5 @@ export type IncludeObject = AttachmentInclude | MediaInclude;
 
 export enum DataTypeKey {
   Attachment = "attachment",
-  Post = "post",
-  Reward = "reward",
-  AccessRule = "access-rule",
-  PostTag = "post_tag",
-  Campaign = "campaign",
-  User = "user",
-  Poll = "poll",
-  PollChoice = "poll_choice",
-  Pledge = "pledge",
   Media = "media",
 }

@@ -2,9 +2,8 @@ import { PatreonRequest } from "./patreon-request";
 import { CampaignApi } from "./apis/campaign";
 import { StreamApi } from "./apis/stream";
 import { PatreonDownloader } from "./downloader";
-import { InternalArgs } from "../type/internal";
+import { InternalOpts, Optional } from "../type/internal";
 import minimist, { ParsedArgs } from "minimist";
-import { exit } from "process";
 
 const DEFAULT_OUT_DIR = "downloaded_media";
 
@@ -14,31 +13,58 @@ function printHelp(): void {
       "Usage:\n" +
       "\tpatreon-scraper [-s <sessionId>] [-o <outputDir>] [campaign_ids...]" +
       "\n\n" +
-      "campaign_ids...\t\tCampaign IDs to scrape\n" +
-      "-s --sessionId\t\tSupply Patreon session ID cookie\n" +
-      "-o --outputDir\t\tChoose download directory location\n"
+      "campaign_ids...\t\tCampaign IDs to scrape (as separate positional arguments)\n" +
+      "-s --sessionId\t\tPatreon Session ID cookie\n" +
+      "-o --outputDir\t\tDownload directory location\n"
   );
 }
 
-function processArgs(parsedArgs: ParsedArgs): InternalArgs {
-  const finalArgs: InternalArgs = {
+enum ActionType {
+  ScrapeStream,
+  ScrapeCampaign,
+  PrintHelp,
+  Invalid,
+}
+
+interface StreamData {
+  tag: ActionType.ScrapeStream;
+  outputDir: string;
+  sessionId: string;
+  creatorId: Optional<string>;
+}
+
+interface CampaignData {
+  tag: ActionType.ScrapeCampaign;
+  outputDir: string;
+  campaignIds: readonly number[];
+  sessionId: Optional<string>;
+}
+
+type OpType =
+  | StreamData
+  | CampaignData
+  | { tag: ActionType.Invalid }
+  | { tag: ActionType.PrintHelp };
+
+const OPTS = ["d", "output_dir", "s", "session_id", "h", "help", "_"];
+const OPT_SET = new Set(OPTS);
+
+function processArgs(parsedArgs: ParsedArgs): InternalOpts {
+  const finalArgs: InternalOpts = {
     campaignIds: [],
     outputDir: DEFAULT_OUT_DIR,
     sessionId: null,
     help: false,
+    foreignKeys: Object.keys(parsedArgs).filter((key) => !OPT_SET.has(key)),
   };
 
-  if (parsedArgs.d) {
-    finalArgs.outputDir = parsedArgs.d as string;
+  if (parsedArgs.d || parsedArgs.output_dir) {
+    const outputDir = (parsedArgs.output_dir ?? parsedArgs.d) as string;
+    finalArgs.outputDir = outputDir;
   }
-  if (parsedArgs.output_dir) {
-    finalArgs.outputDir = parsedArgs.output_dir as string;
-  }
-  if (parsedArgs.s) {
-    finalArgs.sessionId = parsedArgs.s as string;
-  }
-  if (parsedArgs.session_id) {
-    finalArgs.sessionId = parsedArgs.session_id as string;
+  if (parsedArgs.s || parsedArgs.session_id) {
+    const sessionId = (parsedArgs.session_id ?? parsedArgs.s) as string;
+    finalArgs.sessionId = sessionId;
   }
   if (parsedArgs.h || parsedArgs.help) {
     finalArgs.help = true;
@@ -52,15 +78,47 @@ function processArgs(parsedArgs: ParsedArgs): InternalArgs {
   return finalArgs;
 }
 
-async function scrapeCampaigns(
-  campaignIds: readonly number[],
-  outDir: string,
-  sessionId?: string
-) {
-  const patreonRequest = new PatreonRequest(sessionId);
-  const patreonDownloader = new PatreonDownloader(patreonRequest, outDir);
+function validateOpts(opts: InternalOpts): boolean {
+  if (opts.foreignKeys.length > 0) {
+    console.warn(
+      `Executable invoked with unknown arguments: ${opts.foreignKeys.toString()}`
+    );
+  }
 
-  for (const id of campaignIds) {
+  return true;
+}
+
+function getScrapeType(opts: InternalOpts): OpType {
+  if (opts.help) {
+    return {
+      tag: ActionType.PrintHelp,
+    };
+  } else if (opts.campaignIds.length > 0) {
+    return {
+      tag: ActionType.ScrapeCampaign,
+      outputDir: opts.outputDir,
+      campaignIds: opts.campaignIds,
+      sessionId: opts.sessionId ?? null,
+    };
+  } else if (opts.sessionId) {
+    return {
+      tag: ActionType.ScrapeStream,
+      outputDir: opts.outputDir,
+      creatorId: null,
+      sessionId: opts.sessionId,
+    };
+  } else {
+    return {
+      tag: ActionType.Invalid,
+    };
+  }
+}
+
+async function scrapeCampaigns(opts: CampaignData) {
+  const patreonRequest = new PatreonRequest(opts.sessionId ?? undefined);
+  const patreonDownloader = new PatreonDownloader(patreonRequest, opts.outputDir);
+
+  for (const id of opts.campaignIds) {
     const campaignPage = new CampaignApi(id, patreonRequest);
     while (await campaignPage.nextPage()) {
       const attachments = campaignPage.getAttachments();
@@ -73,9 +131,9 @@ async function scrapeCampaigns(
   patreonDownloader.startDownload();
 }
 
-async function scrapeUserStream(sessionId: string, outDir: string) {
-  const patreonRequest = new PatreonRequest(sessionId);
-  const patreonDownloader = new PatreonDownloader(patreonRequest, outDir);
+async function scrapeUserStream(opts: StreamData) {
+  const patreonRequest = new PatreonRequest(opts.sessionId);
+  const patreonDownloader = new PatreonDownloader(patreonRequest, opts.outputDir);
 
   const userStream = new StreamApi(patreonRequest);
   while (await userStream.nextPage()) {
@@ -88,22 +146,38 @@ async function scrapeUserStream(sessionId: string, outDir: string) {
   patreonDownloader.startDownload();
 }
 
-async function main(): Promise<void> {
+async function main(): Promise<number> {
   const opts = processArgs(minimist(process.argv.slice(2)));
+  const optsValid = validateOpts(opts);
+  const currOp = getScrapeType(opts);
 
-  if (opts.help) {
-    printHelp();
-  } else if (opts.campaignIds && opts.campaignIds.length > 0) {
-    await scrapeCampaigns(opts.campaignIds, opts.outputDir, opts.sessionId ?? undefined);
-  } else if (opts.sessionId) {
-    await scrapeUserStream(opts.sessionId, opts.outputDir);
+  let result = 0;
+  if (optsValid) {
+    switch (currOp.tag) {
+      case ActionType.PrintHelp:
+        printHelp();
+        break;
+
+      case ActionType.ScrapeCampaign:
+        await scrapeCampaigns(currOp);
+        break;
+
+      case ActionType.ScrapeStream:
+        await scrapeUserStream(currOp);
+        break;
+
+      case ActionType.Invalid:
+        console.error(
+          "Invalid arguments specified, try running executable with '--help' argument!"
+        );
+        result = 1;
+        break;
+    }
   } else {
-    console.error(
-      "Choose campaigns to scrape or provide session ID to scrape all subscribed creators!"
-    );
-    printHelp();
-    exit(1);
+    result = 1;
   }
+
+  return result;
 }
 
 // Program startup

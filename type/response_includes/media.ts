@@ -8,7 +8,7 @@ export interface Media extends CommonDataProperties {
 interface MediaAttributes {
   download_url: string;
   file_name: string;
-  image_urls?: any;
+  image_urls?: ImageUrls;
   metadata?: MediaMetadata;
 }
 

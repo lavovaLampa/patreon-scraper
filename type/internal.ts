@@ -16,9 +16,10 @@ export interface ParsedArgs {
   _: string[];
 }
 
-export interface InternalArgs {
+export interface InternalOpts {
   sessionId: Optional<string>;
   outputDir: string;
   campaignIds: readonly number[];
   help: boolean;
+  foreignKeys: string[];
 }

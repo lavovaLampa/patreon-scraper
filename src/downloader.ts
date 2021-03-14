@@ -2,6 +2,10 @@ import { PatreonFileHandle } from "../type/internal";
 import { PatreonRequest } from "./patreon-request";
 import fs from "fs";
 import stream from "stream";
+import { promisify } from "util";
+import { exit } from "process";
+
+const pipeline = promisify(stream.pipeline);
 
 export class PatreonDownloader {
   protected readonly request: PatreonRequest;
@@ -16,7 +20,7 @@ export class PatreonDownloader {
     this.existingFileSet = new Set();
 
     this.createDownloadDir();
-    this.checkDownloadedFiles();
+    this.buildFileSet();
   }
 
   public addToQueue(files: PatreonFileHandle[]): void {
@@ -24,35 +28,70 @@ export class PatreonDownloader {
   }
 
   public startDownload(): void {
+    this.queue = this.queue.filter(
+      (x) => !this.existingFileSet.has(this.getHandlePath(x))
+    );
     void this.getNext();
   }
 
-  private createDownloadDir(): void {
-    let dirExists = false;
+  private getHandlePath(handle: PatreonFileHandle): string {
+    return `${this.outDir}/${handle.creatorId}/${handle.fileName}`;
+  }
 
+  private createDownloadDir(): void {
     try {
       const stat = fs.statSync(this.outDir);
-      if (stat.isDirectory()) {
-        dirExists = true;
+      if (!stat.isDirectory()) {
+        console.error(`Path: "${fs.realpathSync(this.outDir)}" is not a directory!`);
+        exit(2);
       }
     } catch {
-      dirExists = false;
-    }
-
-    if (!dirExists) {
       fs.mkdirSync(this.outDir);
     }
   }
 
-  private checkDownloadedFiles(): void {
+  private buildFileSet(currPrefix: string = this.outDir): void {
+    if (fs.existsSync(currPrefix)) {
+      let accessible = false;
+
+      try {
+        fs.accessSync(currPrefix);
+        accessible = true;
+      } catch (e) {
+        console.warn(`Directory: ${currPrefix} is not accessible!`);
+      }
+
+      if (accessible) {
+        const stat = fs.statSync(currPrefix);
+        if (stat.isDirectory()) {
+          const dirEntries = fs.readdirSync(currPrefix);
+
+          for (const entry of dirEntries) {
+            const entryPath = `${currPrefix}/${entry}`;
+            const entryStat = fs.statSync(entryPath);
+
+            if (entryStat.isFile()) {
+              this.existingFileSet.add(entryPath);
+            } else {
+              this.buildFileSet(entryPath);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private checkHandleDir(handle: PatreonFileHandle): void {
+    const dirPath = `${this.outDir}/${handle.creatorId}`;
+
     try {
-      const stat = fs.statSync(this.outDir);
-      if (stat.isDirectory()) {
-        const dirFiles = fs.readdirSync(this.outDir);
-        this.existingFileSet = new Set(dirFiles);
+      const stat = fs.statSync(dirPath);
+      if (!stat.isDirectory()) {
+        console.error(`Path: "${fs.realpathSync(dirPath)}" is not a directory!`);
+        exit(2);
       }
     } catch (e) {
-      console.error(e.message);
+      fs.mkdirSync(dirPath);
     }
   }
 
@@ -60,32 +99,30 @@ export class PatreonDownloader {
     const currHandle = this.queue.pop();
 
     if (currHandle) {
-      const filePath = `${this.outDir}/${currHandle.fileName}`;
-      if (!this.existingFileSet.has(currHandle.fileName)) {
+      const filePath = `${this.outDir}/${currHandle.creatorId}/${currHandle.fileName}`;
+      this.checkHandleDir(currHandle);
+
+      if (!this.existingFileSet.has(filePath)) {
         try {
           const fileRequest = this.request.getUrlStream(currHandle.url);
           const fileWriteStream = fs.createWriteStream(filePath);
 
-          console.log(`Starting download of file \"${currHandle.fileName}`);
+          console.log(
+            `Starting download of file "${currHandle.fileName}". (${this.queue.length} remaining)`
+          );
+          await pipeline(fileRequest, fileWriteStream);
+          console.log("DONE!");
 
-          stream.pipeline(fileRequest, fileWriteStream, async (err) => {
-            if (err) {
-              console.log("Error " + err + " happened!");
-            } else {
-              console.log("DONE!");
-
-              if (this.queue.length > 0) {
-                // Wait for some time between downloads, just to be sure
-                await new Promise((res) => setTimeout(res, 1500));
-                this.getNext();
-              }
-            }
-          });
+          if (this.queue.length > 0) {
+            // Wait for some time between downloads, just to be sure
+            await new Promise((res) => setTimeout(res, 500));
+            void this.getNext();
+          }
         } catch (e) {
           console.error("Error " + e + " happened!");
         }
       } else {
-        this.getNext();
+        void this.getNext();
       }
     }
   }
