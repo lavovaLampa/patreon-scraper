@@ -1,6 +1,6 @@
 {
   "name": "patreon-scraper",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Patreon downloader",
   "repository": "https://github.com/lavovaLampa/patreon-scraper",
   "main": "src/index.ts",
@@ -14,7 +14,7 @@
     "lint-fix": "eslint --fix 'src/**' 'type/**'"
   },
   "dependencies": {
-    "got": "^11.8.2",
+    "got": "^11.8.3",
     "minimist": "^1.2.5",
     "moment": "^2.29.1",
     "tough-cookie": "^4.0.0"
@@ -22,16 +22,16 @@
   "devDependencies": {
     "@tsconfig/node12": "^1.0.7",
     "@types/node": "^14.14.32",
-    "@types/tough-cookie": "^4.0.0",
-    "@types/minimist": "^1.2.1",
-    "@typescript-eslint/eslint-plugin": "^4.16.0",
-    "@typescript-eslint/parser": "^4.16.0",
-    "eslint": "^7.21.0",
-    "eslint-config-prettier": "^8.1.0",
-    "eslint-plugin-prettier": "^3.3.1",
-    "prettier": "^2.2.1",
-    "typescript": "^4.2.3",
-    "pkg": "^4.4.9"
+    "@types/tough-cookie": "^4.0.1",
+    "@types/minimist": "^1.2.2",
+    "@typescript-eslint/eslint-plugin": "^5.5.0",
+    "@typescript-eslint/parser": "^5.5.0",
+    "eslint": "^8.3.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "^2.5.0",
+    "typescript": "^4.5.2",
+    "pkg": "^5.5.1"
   },
   "author": "LavaLamp",
   "license": "MIT",

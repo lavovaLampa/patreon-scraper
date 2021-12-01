@@ -16,7 +16,7 @@ or
 - `npm run build`
 
 # Running
-- `./<executable> --help
+- `node build/src/index.js --help`
 
 # TODO
 - [x] Choose Your Own Download Folder™
